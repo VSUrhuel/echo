@@ -1,226 +1,94 @@
-"use client";
+'use client'
+import Link from 'next/link'
+import { Logo } from '../Logo/logo'
+import { Menu, X } from 'lucide-react'
+import React from 'react'
+import { useScroll, motion } from 'motion/react'
+import { cn } from '@/lib/utils'
+import { LoadingScreen } from '@/components/ui/loading-screen'
+import { createClient } from '@/utils/supabase/client'
 
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Moon, Sun, Settings, LogOut, User } from "lucide-react";
-import { useTheme } from "next-themes";
-import Image from "next/image";
-import Link from "next/link";
-import { usePathname, useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import { SidebarTrigger } from "../ui/sidebar";
-import { LoadingScreen } from "@/components/ui/loading-screen"
-import { createClient } from "@/utils/supabase/client";
+const menuItems = [
+  { name: 'Home', href: '#link' },
+  { name: 'Academics', href: '#link' },
+  { name: 'Faculty', href: '#link' },
+  { name: 'News & Updates', href: '#link' },
+  { name: 'Resources', href: '#link' },
+  { name: 'Contact Us', href: '#link' },
+]
 
-// Define the User interface
-interface User {
-  name?: string;
-  email?: string;
-  avatar?: string;
-  image?: string;
-}
+export const SiteHeader = () => {
+    const [menuState, setMenuState] = React.useState(false)
+    const [scrolled, setScrolled] = React.useState(false)
+    const { scrollYProgress } = useScroll()
 
-// Define the props interface
-interface SiteHeaderProps {
-  user?: User | null;
-  isAuthenticated: boolean;
-  showSidebarTrigger?: boolean; // Prop to control sidebar trigger visibility
-}
+    React.useEffect(() => {
+        const unsubscribe = scrollYProgress.on('change', (latest) => {
+            setScrolled(latest > 0.05)
+        })
+        return () => unsubscribe()
+    }, [scrollYProgress])
 
-export function SiteHeader({
-  user,
-  isAuthenticated,
-  showSidebarTrigger = false,
-}: SiteHeaderProps) {
-  const pathname = usePathname();
-  const router = useRouter();
-  const { theme, setTheme } = useTheme();
-  const [mounted, setMounted] = useState(false);
-  const [isLoggingOut, setIsLoggingOut] = useState(false);
+    return (
+        <header>
+            <nav
+                data-state={menuState && 'active'}
+                className="fixed z-20 w-full">
+                <div className={cn('mx-auto w-full px-3 transition-all duration-100 lg:px-7 bg-background/80 backdrop-blur-2xl lg:bg-transparent lg:backdrop-blur-none', scrolled && 'lg:bg-background/80 lg:backdrop-blur-2xl')}>
+                    <motion.div
+                        key={1}
+                        className={cn('relative flex flex-wrap items-center justify-between gap-6 py-3 duration-200 lg:gap-0 lg:py-5', scrolled && 'lg:py-3')}>
+                        <div className="flex max-w-7xl flex-1 items-center justify-between gap-12 lg:w-auto">
+                            <Link
+                                href="/"
+                                aria-label="home"
+                                className="flex items-center space-x-2">
+                                <Logo scrolled={scrolled} />
+                            </Link>
 
-  // Use avatar from user.avatar or user.image (fallback) if user exists
-  const avatarSrc = user?.avatar || user?.image;
-  const isLoginPage = pathname === "/login";
-  const isOrgPage =
-    pathname.startsWith("/org-") || pathname.startsWith("/organization/");
-
-  // Ensure component is mounted before showing theme-dependent content
-  useEffect(() => {
-    setMounted(true);
-  }, []);
-
-  const toggleTheme = () => {
-    setTheme(theme === "dark" ? "light" : "dark");
-  };
-
-  const handleLogout = async () => {
-    try {
-      setIsLoggingOut(true);
-
-      // First, sign out from Firebase
-      await createClient().auth.signOut();
-
-      window.location.href = "/?logout=true";
-    } catch (error) {
-      console.error("Error signing out:", error);
-      window.location.href = "/?logout=true";
-    }
-  };
-
-  return (
-    <header className="w-full h-[69px] bg-white dark:bg-background border-b border-gray-400 dark:border-border shadow-lg relative z-10">
-      {isLoggingOut && (
-        <LoadingScreen message="Signing out..." className="rounded-none" />
-      )}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-full">
-        <div className="flex items-center justify-between w-full h-full">
-          {/* Left side - Logo, Title, and Sidebar Trigger */}
-          <div className="flex items-center">
-            {/* Sidebar Trigger - Show on all screen sizes for org pages */}
-            {showSidebarTrigger && isOrgPage && (
-              <SidebarTrigger className="mr-4 sm:hidden block" />
-            )}
-
-            {/* Mobile Logo & Title - Always show on mobile except login page */}
-            <div className="flex items-center sm:hidden">
-              {!isLoginPage && (
-                <Image
-                  src="/enhanced-logo-final.svg"
-                  alt="Coral Logo"
-                  width={45}
-                  height={45}
-                  className="text-primary"
-                />
-              )}
-              <Link href={isAuthenticated ? "/org-dashboard" : "/"}>
-                <h1 className="text-xl lg:text-2xl font-bold text-foreground dark:text-foreground ml-3">
-                  CORAL
-                </h1>
-              </Link>
-            </div>
-
-            {/* Desktop - Either show nothing (org pages) or logo+title (public pages) */}
-            <div className="hidden sm:flex items-center">
-              {!isOrgPage && !isLoginPage && (
-                <Link
-                  href={isAuthenticated ? "/org-dashboard" : "/"}
-                  className="flex items-center"
-                >
-                  <Image
-                    src="/enhanced-logo-final.svg"
-                    alt="Coral Logo"
-                    width={40}
-                    height={40}
-                    className="text-primary mr-2"
-                  />
-                  <h1 className="text-xl font-bold text-foreground dark:text-foreground">
-                    CORAL
-                  </h1>
-                </Link>
-              )}
-            </div>
-          </div>
-
-          {/* Right Navigation */}
-          <div className="flex items-center justify-end space-x-4 sm:space-x-6">
-            {/* Theme Toggle Button */}
-            <button
-              onClick={toggleTheme}
-              className="font-nunito text-lg sm:text-xl text-[#202020] dark:text-foreground hover:text-[#008ACF] dark:hover:text-primary transition-colors flex items-center gap-1"
-              aria-label={
-                mounted
-                  ? theme === "dark"
-                    ? "Switch to light mode"
-                    : "Switch to dark mode"
-                  : "Toggle theme"
-              }
-            >
-              {mounted ? (
-                <>
-                  {theme === "dark" ? (
-                    <Sun className="h-4 w-4" />
-                  ) : (
-                    <Moon className="h-4 w-4" />
-                  )}
-                  {theme === "dark" ? "Light" : "Dark"}
-                </>
-              ) : (
-                // Show a neutral state during SSR/before hydration
-                <>
-                  <Moon className="h-4 w-4" />
-                  Theme
-                </>
-              )}
-            </button>
-
-            {/* User Menu or Login Link */}
-            {isAuthenticated && user ? (
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <button className="outline-none focus:ring-2 focus:ring-primary/20 rounded-lg">
-                    <Avatar className="h-9 w-9 rounded-lg ring-1 ring-primary/20 cursor-pointer">
-                      <AvatarImage src={avatarSrc} alt={user.name} />
-                      <AvatarFallback className="rounded-lg bg-primary-foreground text-primary">
-                        {user.name?.[0]?.toUpperCase() ?? "U"}
-                      </AvatarFallback>
-                    </Avatar>
-                  </button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="end" className="w-56">
-                  <DropdownMenuLabel>
-                    <div className="flex flex-col">
-                      <span className="font-medium">{user.name}</span>
-                      <span className="text-xs text-muted-foreground">
-                        {user.email}
-                      </span>
-                    </div>
-                  </DropdownMenuLabel>
-                  <DropdownMenuSeparator />
-                  <DropdownMenuItem
-                    onClick={() => router.push("/organization/profile")}
-                    className="cursor-pointer"
-                  >
-                    <User className="mr-2 h-4 w-4" />
-                    <span>Profile</span>
-                  </DropdownMenuItem>
-                  <DropdownMenuItem
-                    onClick={() => router.push("/organization/settings")}
-                    className="cursor-pointer"
-                  >
-                    <Settings className="mr-2 h-4 w-4" />
-                    <span>Settings</span>
-                  </DropdownMenuItem>
-                  <DropdownMenuSeparator />
-                  <DropdownMenuItem
-                    onClick={handleLogout}
-                    className="text-red-600 cursor-pointer hover:text-red-700 dark:text-red-500 dark:hover:text-red-400"
-                  >
-                    <LogOut className="mr-2 h-4 w-4" />
-                    <span>Log out</span>
-                  </DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
-            ) : (
-              // Show login link with consistent styling
-              <Link
-                href="/login"
-                className={`font-nunito text-lg sm:text-xl text-[#202020] dark:text-foreground hover:text-[#008ACF] dark:hover:text-primary transition-colors ${
-                  pathname === "/login" ? "font-medium" : ""
-                }`}
-              >
-                Login
-              </Link>
-            )}
-          </div>
-        </div>
-      </div>
-    </header>
-  );
+                            <button
+                                onClick={() => setMenuState(!menuState)}
+                                aria-label={menuState == true ? 'Close Menu' : 'Open Menu'}
+                                className="relative z-20 -m-2.5 -mr-4 block cursor-pointer p-2.5 lg:hidden">
+                                <Menu className="in-data-[state=active]:rotate-180 in-data-[state=active]:scale-0 in-data-[state=active]:opacity-0 m-auto size-6 duration-200" />
+                                <X className="in-data-[state=active]:rotate-0 in-data-[state=active]:scale-100 in-data-[state=active]:opacity-100 absolute inset-0 m-auto size-6 -rotate-180 scale-0 opacity-0 duration-200" />
+                            </button>
+                        </div>
+                        <div className="hidden lg:block">
+                            <ul className="flex gap-8 text-sm">
+                                {menuItems.map((item, index) => (
+                                    <li key={index}>
+                                        <Link
+                                            href={item.href}
+                                            className={cn(
+                                                "font-semibold block duration-50 transition-colors relative after:absolute after:-bottom-6.5 after:left-1/2 after:h-0.5 after:w-0 after:-translate-x-1/2 after:bg-current after:transition-all after:duration-200 hover:after:w-full",
+                                                scrolled ? "text-foreground hover:text-[#24418f]" : "text-white"
+                                            )}
+                                        >
+                                            <span>{item.name}</span>
+                                        </Link>
+                                    </li>
+                                ))}
+                            </ul>
+                        </div>
+                        <div className="bg-background in-data-[state=active]:block lg:in-data-[state=active]:flex mb-6 hidden w-full flex-wrap items-center justify-end space-y-8 rounded-3xl border p-6 shadow-2xl shadow-zinc-300/20 md:flex-nowrap lg:m-0 lg:flex lg:w-fit lg:gap-6 lg:space-y-0 lg:border-transparent lg:bg-transparent lg:p-0 lg:shadow-none dark:shadow-none dark:lg:bg-transparent">
+                            <div className="lg:hidden">
+                                <ul className="space-y-6 text-base">
+                                    {menuItems.map((item, index) => (
+                                        <li key={index}>
+                                            <Link
+                                                href={item.href}
+                                                className="text-foreground font-semibold hover:text-accent-foreground block duration-150">
+                                                <span>{item.name}</span>
+                                            </Link>
+                                        </li>
+                                    ))}
+                                </ul>
+                            </div>
+                        </div>
+                    </motion.div>
+                </div>
+            </nav>
+        </header>
+    )
 }
