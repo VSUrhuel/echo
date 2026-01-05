@@ -1,12 +1,12 @@
 "use client";
 
-import { HeroSection } from "@/features/auth/components/homepage";
-import NewsUpdates from "@/features/auth/components/homepage/NewsUpdates";
-import AboutPrgoram from "@/features/auth/components/homepage/AboutProgram";
-import AboutProgram from "@/features/auth/components/homepage/AboutProgram";
-import CompanyLinkages from "@/features/auth/components/homepage/CompanyLinkages";
-import NotableAlumni from "@/features/auth/components/homepage/NotableAlumni";
-import RisingStars from "@/features/auth/components/homepage/RisingStart";
+import { HeroSection } from "@/features/homepage/components";
+import NewsUpdates from "@/features/homepage/components/NewsUpdates";
+import AboutPrgoram from "@/features/homepage/components/AboutProgram";
+import AboutProgram from "@/features/homepage/components/AboutProgram";
+import CompanyLinkages from "@/features/homepage/components/CompanyLinkages";
+import NotableAlumni from "@/features/homepage/components/NotableAlumni";
+import RisingStars from "@/features/homepage/components/RisingStart";
 
 export default function Home() {
   return (
