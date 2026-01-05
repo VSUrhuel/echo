@@ -48,7 +48,7 @@ export default function PublicLayout({
       setIsAuthenticated(authenticated);
 
       if (authenticated && (pathname === "/" || pathname === "/login")) {
-        router.push("/admin-dashboard");
+        router.push("/admin");
       }
     });
 
@@ -62,7 +62,7 @@ export default function PublicLayout({
     {
       label: "Home",
       icon: "home",
-      href: isAuthenticated ? "/admin-dashboard" : "/",
+      href: isAuthenticated ? "/admin" : "/",
     },
     {
       label: "About",
@@ -70,9 +70,9 @@ export default function PublicLayout({
       href: "/coming-soon",
     },
     {
-      label: isAuthenticated ? "Dashboard" : "Login",
-      icon: isAuthenticated ? "dashboard" : "login",
-      href: isAuthenticated ? "/admin-dashboard" : "/login",
+      label: isAuthenticated ? "Dashboard" : "",
+      icon: isAuthenticated ? "dashboard" : "",
+      href: isAuthenticated ? "/admin" : "/",
     },
   ];
 
