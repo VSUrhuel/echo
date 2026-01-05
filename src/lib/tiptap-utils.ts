@@ -358,6 +358,16 @@ export function selectionWithinConvertibleTypes(
  * @param abortSignal Optional AbortSignal for cancelling the upload
  * @returns Promise resolving to the URL of the uploaded image
  */
+// ... imports
+import { createClient } from "@/utils/supabase/client"
+
+/**
+ * Handles image upload with progress tracking and abort capability
+ * @param file The file to upload
+ * @param onProgress Optional callback for tracking upload progress
+ * @param abortSignal Optional AbortSignal for cancelling the upload
+ * @returns Promise resolving to the URL of the uploaded image
+ */
 export const handleImageUpload = async (
   file: File,
   onProgress?: (event: { progress: number }) => void,
@@ -374,17 +384,45 @@ export const handleImageUpload = async (
     )
   }
 
-  // For demo/testing: Simulate upload progress. In production, replace the following code
-  // with your own upload implementation.
-  for (let progress = 0; progress <= 100; progress += 10) {
-    if (abortSignal?.aborted) {
-      throw new Error("Upload cancelled")
-    }
-    await new Promise((resolve) => setTimeout(resolve, 500))
-    onProgress?.({ progress })
-  }
+  const supabase = createClient()
+  const fileExt = file.name.split(".").pop()
+  const fileName = `${Date.now()}-${Math.random().toString(36).substring(2)}.${fileExt}`
+  const bucketName = "article-images"
 
-  return "/images/tiptap-ui-placeholder-image.jpg"
+  try {
+      const { data, error } = await supabase.storage
+        .from(bucketName)
+        .upload(fileName, file, {
+          cacheControl: "3600",
+          upsert: false,
+        })
+
+      if (error) {
+        throw error
+      }
+
+      // Simulate progress for UX since Supabase upload doesn't emit progress events yet
+      // This is optional but keeps the UI feeling responsive
+      for (let progress = 0; progress <= 100; progress += 20) {
+        if (abortSignal?.aborted) {
+          throw new Error("Upload cancelled")
+        }
+        onProgress?.({ progress })
+        await new Promise((resolve) => setTimeout(resolve, 50))
+      }
+
+      const { data: { publicUrl } } = supabase.storage
+        .from(bucketName)
+        .getPublicUrl(fileName)
+
+      return publicUrl
+  } catch (error) {
+    console.error("Error uploading image:", error)
+    if (error instanceof Error) {
+        throw error
+    }
+    throw new Error("Image upload failed")
+  }
 }
 
 type ProtocolOptions = {

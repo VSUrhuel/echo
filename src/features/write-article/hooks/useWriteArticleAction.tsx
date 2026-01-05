@@ -47,6 +47,12 @@ export const useWriteArticleAction = () => {
             tags: formData.tags as string[],
             cover_image_url: formData.cover_image_url,
         } as ArticleFormData;
+        let publishedAt = null;
+        if(status === "draft") {
+            publishedAt = null;
+        } else {
+            publishedAt = new Date().toISOString();
+        }
       const { data, error } = await supabase
         .from('articles')
         .insert([
@@ -54,6 +60,7 @@ export const useWriteArticleAction = () => {
             ...article,
             author_id: currentUser,
             status: status,
+            published_at: publishedAt,
             views_count: 0,
             created_at: new Date().toISOString(),
             updated_at: new Date().toISOString(),
@@ -77,9 +84,9 @@ export const useWriteArticleAction = () => {
         throw error;
       }
 
-      console.log('Article published successfully:', data);
+      toast.success('Article published successfully!');
     } catch (error) {
-      console.error('Error publishing article:', error);
+      toast.error('Error publishing article: ' + error);
     }
   };
 
