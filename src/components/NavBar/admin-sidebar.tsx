@@ -31,32 +31,32 @@ import { createClient } from "@/utils/supabase/client"
 const menuItems = [
   {
     title: "Dashboard",
-    href: "/admin",
+    href: "/admin-dashboard",
     icon: LayoutDashboard,
   },
   {
     title: "Articles",
-    href: "/admin/articles",
+    href: "/admin-dashboard/articles",
     icon: Newspaper,
   },
   {
     title: "Write Article",
-    href: "/admin/write",
+    href: "/admin-dashboard/write",
     icon: FileText,
   },
   {
     title: "OJT Linkages",
-    href: "/admin/ojt-linkages",
+    href: "/admin-dashboard/ojt-linkages",
     icon: Briefcase,
   },
   {
     title: "Notable Alumni",
-    href: "/admin/alumni",
+    href: "/admin-dashboard/alumni",
     icon: GraduationCap,
   },
   {
     title: "Faculty",
-    href: "/admin/faculty",
+    href: "/admin-dashboard/faculty",
     icon: Users,
   },
 ]

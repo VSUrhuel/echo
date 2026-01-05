@@ -48,7 +48,7 @@ export default function PublicLayout({
       setIsAuthenticated(authenticated);
 
       if (authenticated && (pathname === "/" || pathname === "/login")) {
-        router.push("/admin");
+        router.push("/admin-dashboard");
       }
     });
 
