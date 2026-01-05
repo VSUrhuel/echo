@@ -36,27 +36,27 @@ const menuItems = [
   },
   {
     title: "Articles",
-    href: "/admin-dashboard/articles",
+    href: "/admin-articles",
     icon: Newspaper,
   },
   {
     title: "Write Article",
-    href: "/admin-dashboard/write",
+    href: "/admin-write",
     icon: FileText,
   },
   {
     title: "OJT Linkages",
-    href: "/admin-dashboard/ojt-linkages",
+    href: "/admin-ojt-linkages",
     icon: Briefcase,
   },
   {
     title: "Notable Alumni",
-    href: "/admin-dashboard/alumni",
+    href: "/admin-alumni",
     icon: GraduationCap,
   },
   {
     title: "Faculty",
-    href: "/admin-dashboard/faculty",
+    href: "/admin-faculty",
     icon: Users,
   },
 ]
