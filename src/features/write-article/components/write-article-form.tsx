@@ -57,8 +57,6 @@ export default function WriteArticleForm() {
     // 3. Handle Submit
     const handleSubmit = async (e?: React.FormEvent | React.MouseEvent) => {
         if (e) e.preventDefault();
-        // Confirm dialog
-
         setIsSubmitting(true);
         try {
             await handlePublishArticle();
@@ -78,7 +76,7 @@ export default function WriteArticleForm() {
     };
 
     return (
-        <div className="mx-auto p-6 max-w-7xl">
+        <div className="mx-auto p-2 max-w-7xl">
             <form onSubmit={handleSubmit} className="space-y-6">
                 <div className="space-y-2">
                     <Label htmlFor="title" className="text-sm font-medium text-gray-700 dark:text-gray-300">
