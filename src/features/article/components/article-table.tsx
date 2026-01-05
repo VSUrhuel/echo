@@ -83,7 +83,7 @@ export default function ArticleTable({articles, loading}: ArticleTableProps) {
                             </Button>
                           </DropdownMenuTrigger>
                           <DropdownMenuContent align="end">
-                            <DropdownMenuItem>
+                            <DropdownMenuItem onClick={() => router.push(`/admin-articles/view/${article.id}`)}>
                               <Eye className="mr-2 h-4 w-4" />
                               View
                             </DropdownMenuItem>

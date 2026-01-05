@@ -6,6 +6,7 @@ import { toast } from "sonner";
 export const useArticleData = ({articleId}: {articleId?: string | undefined} = {}) => {
     const [articles, setArticles] = useState<Article[]>([]);
     const [selectedArticle, setSelectedArticle] = useState<ArticleFormData | null>(null);
+    const [article, setArticle] = useState<Article | null>(null);
     const [loading, setLoading] = useState(false);
     
     useEffect(() => {
@@ -63,7 +64,22 @@ export const useArticleData = ({articleId}: {articleId?: string | undefined} = {
                     cover_image_url: data.cover_image_url,
                 } as ArticleFormData
 
+                const article = {
+                    id: data.id,
+                    title: data.title,
+                    content: data.content,
+                    excerpt: data.excerpt,
+                    slug: data.slug,
+                    category: data.category,
+                    tags: typeof data.tags === 'string' ? data.tags.replace(/[\[\]"]/g, '').split(',').map((tag: string) => tag.trim()) : (Array.isArray(data.tags) ? data.tags : []),
+                    cover_image_url: data.cover_image_url,
+                    author: data.author,
+                    created_at: data.created_at,
+                    published_at: data.published_at,
+                } as Article
+
                 setSelectedArticle(articleFormData);
+                setArticle(article);
             }
             finally {
                 setLoading(false);
@@ -75,6 +91,7 @@ export const useArticleData = ({articleId}: {articleId?: string | undefined} = {
     return {
         articles,
         loading,
-        selectedArticle
+        selectedArticle,
+        article
     }
 }
