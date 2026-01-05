@@ -153,7 +153,7 @@ export function LoginCard() {
           <div className="lg:hidden w-full flex justify-center items-center order-1 animate-fade-in-up animation-delay-200">
             <div className="w-full max-w-[1200px] flex justify-center">
               <Image
-                src="/images/enhanced-logo-final.png"
+                src="/images/enhanced-logo-final.svg"
                 alt="Logo"
                 width={200}
                 height={150}
