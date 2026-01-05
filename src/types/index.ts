@@ -68,6 +68,7 @@ export interface Article {
   // Tracking
   created_at: ISODateString;
   updated_at: ISODateString;
+  author?: Profile;
 }
 
 export interface ArticleFormData {
