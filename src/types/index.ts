@@ -55,22 +55,28 @@ export type ArticleStatus = 'draft' | 'published' | 'archived';
 export interface Article {
   id: number;
   title: string;
-  slug: string;
-  excerpt: string | null;
   content: string | null;
+  excerpt: string | null;
+  slug: string | null;
   cover_image_url: string | null;
   category: string | null;
   tags: string | null; 
   author_id: UUID | null; 
-  is_featured: boolean;
   status: ArticleStatus;
   published_at: ISODateString | null;
-  meta_title: string | null;
-  meta_description: string | null;
-  views_count: number;
+  views_count: number | null;
   // Tracking
   created_at: ISODateString;
   updated_at: ISODateString;
+}
+
+export interface ArticleFormData {
+  title: string;
+  content: string;
+  slug: string;
+  category: string;
+  tags: string[];
+  cover_image_url: string;
 }
 
 /* -------------------------------------------------------------------------- */
