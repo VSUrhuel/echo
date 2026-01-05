@@ -11,12 +11,14 @@ export const useWriteArticleAction = () => {
   const [formData, setFormData] = useState<ArticleFormData>({
     title: '',
     content: '',
+    excerpt: '',
     slug: '',
     category: '',
     tags: [],
     cover_image_url: '',
   });
   const [tagInput, setTagInput] = useState('');
+  const [articleId, setArticleId] = useState<number | null>(null);
 
   const handlePublishArticle = async () => {
     await handleSaveArticle("published");
@@ -39,54 +41,66 @@ export const useWriteArticleAction = () => {
         }
 
         const currentUser = user.id;
-        const article = {
+        const articlePayload = {
             title: formData.title,
             content: formData.content,
+            excerpt: formData.excerpt,
             slug: formData.slug,
             category: formData.category,
             tags: formData.tags as string[],
             cover_image_url: formData.cover_image_url,
-        } as ArticleFormData;
-        let publishedAt = null;
-        if(status === "draft") {
-            publishedAt = null;
-        } else {
-            publishedAt = new Date().toISOString();
-        }
-      const { data, error } = await supabase
-        .from('articles')
-        .insert([
-          {
-            ...article,
             author_id: currentUser,
             status: status,
-            published_at: publishedAt,
-            views_count: 0,
-            created_at: new Date().toISOString(),
+            published_at: status === "draft" ? null : new Date().toISOString(),
             updated_at: new Date().toISOString(),
-          },
-        ])
-        .select();
+        };
+
+        let result;
+
+        if (articleId) {
+            result = await supabase
+                .from('articles')
+                .update(articlePayload)
+                .eq('id', articleId)
+                .select()
+                .single();
+        } else {
+            result = await supabase
+                .from('articles')
+                .insert([
+                    {
+                        ...articlePayload,
+                        views_count: 0,
+                        created_at: new Date().toISOString(),
+                    },
+                ])
+                .select()
+                .single();
+        }
+    
+      const { data, error } = result;
 
       if (error) {
         if (error?.code === '23505') {
-        // Optional: Check if the error message mentions "slug" to be sure
         if (error.message?.includes('slug') || error.details?.includes('slug')) {
             toast.error('This URL Slug already exists. Please click "Generate" to get a new unique one. Or change the article title');
         } else {
             toast.error('A record with this unique ID already exists.');
         }
         } 
-        // Handle other generic errors
         else {
             toast.error(error.message || 'An unexpected error occurred. Please try again.');
         }
         throw error;
       }
 
-      toast.success('Article published successfully!');
-    } catch (error) {
-      toast.error('Error publishing article: ' + error);
+      if (data && !articleId) {
+          setArticleId(data.id);
+      }
+
+      toast.success(status === 'draft' ? 'Article saved as draft!' : 'Article published successfully!');
+    } catch (error: any) {
+      toast.error('Error publishing article: ' + (error.message || error));
     }
   };
 
@@ -108,7 +122,6 @@ export const useWriteArticleAction = () => {
     }, 500);
   };
 
-  // Handle tag management
   const handleAddTag = (e?: React.KeyboardEvent | React.MouseEvent) => {
     if (e) e.preventDefault();
     
@@ -187,6 +200,7 @@ export const useWriteArticleAction = () => {
     handleInputChange,
     handleImageUpload,
     handlePublishArticle,
-    handleDraftArticle
+    handleDraftArticle,
+    articleId
   };
 };

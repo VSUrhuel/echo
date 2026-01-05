@@ -73,6 +73,7 @@ export interface Article {
 export interface ArticleFormData {
   title: string;
   content: string;
+  excerpt: string;
   slug: string;
   category: string;
   tags: string[];

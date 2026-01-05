@@ -7,7 +7,18 @@ import { Editor } from "@tiptap/core";
 import { useState, useCallback } from "react";
 import WriteArticleSidebarSetting from "./write-article-sidebar-settings";
 import { useWriteArticleAction } from "../hooks/useWriteArticleAction";
-import { Eye, Save, Send } from "lucide-react";
+import { Save, Send } from "lucide-react";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog"
 
 export default function WriteArticleForm() {
     // 1. Call your custom hook
@@ -44,8 +55,10 @@ export default function WriteArticleForm() {
     }, [handleInputChange]);
 
     // 3. Handle Submit
-    const handleSubmit = async (e: React.FormEvent) => {
-        e.preventDefault();
+    const handleSubmit = async (e?: React.FormEvent | React.MouseEvent) => {
+        if (e) e.preventDefault();
+        // Confirm dialog
+
         setIsSubmitting(true);
         try {
             await handlePublishArticle();
@@ -64,20 +77,8 @@ export default function WriteArticleForm() {
         }
     };
 
-    // 5. Handle Preview
-    const handlePreview = () => {
-        // In a real app, this would open a preview modal or new tab
-        console.log("Preview article:", formData);
-        // Example: window.open(`/preview/${formData.slug}`, '_blank');
-    };
-
     return (
         <div className="mx-auto p-6 max-w-7xl">
-            <div className="mb-8">
-                <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Write Article</h1>
-                <p className="text-gray-600 dark:text-gray-400 mt-2">Create and publish a new article</p>
-            </div>
-
             <form onSubmit={handleSubmit} className="space-y-6">
                 <div className="space-y-2">
                     <Label htmlFor="title" className="text-sm font-medium text-gray-700 dark:text-gray-300">
@@ -121,27 +122,7 @@ export default function WriteArticleForm() {
 
                 {/* Action Buttons - Now inside the form */}
                 <div className="flex justify-between items-center pt-6 border-t border-gray-200 dark:border-gray-800">
-                    {/* <div className="text-sm text-gray-500 dark:text-gray-400">
-                        {editor?.getCharacterCount() ? (
-                            <div className="flex items-center gap-4">
-                                <span>{editor.getCharacterCount()} characters</span>
-                                <span>•</span>
-                                <span>{editor.getText().split(/\s+/).filter(Boolean).length} words</span>
-                            </div>
-                        ) : (
-                            'Start typing...'
-                        )}
-                    </div> */}
                     <div className="flex gap-3">
-                        <Button 
-                            type="button" 
-                            variant="outline" 
-                            onClick={handlePreview}
-                            className="gap-2 border-gray-300 dark:border-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800"
-                        >
-                            <Eye className="h-4 w-4" />
-                            Preview
-                        </Button>
                         <Button 
                             type="button" 
                             variant="outline"
@@ -161,23 +142,40 @@ export default function WriteArticleForm() {
                                 </>
                             )}
                         </Button>
-                        <Button 
-                            type="submit" 
-                            disabled={isSubmitting}
-                            className="gap-2 bg-blue-600 hover:bg-blue-700 dark:bg-blue-600 dark:hover:bg-blue-700 text-white"
-                        >
-                            {isSubmitting ? (
-                                <>
-                                    <div className="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent" />
-                                    Publishing...
-                                </>
-                            ) : (
-                                <>
-                                    <Send className="h-4 w-4" />
-                                    Publish Article
-                                </>
-                            )}
-                        </Button>
+
+                        <AlertDialog>
+                            <AlertDialogTrigger asChild>
+                                <Button 
+                                    type="button" 
+                                    disabled={isSubmitting}
+                                    className="gap-2 bg-blue-600 hover:bg-blue-700 dark:bg-blue-600 dark:hover:bg-blue-700 text-white"
+                                >
+                                    {isSubmitting ? (
+                                        <>
+                                            <div className="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent" />
+                                            Publishing...
+                                        </>
+                                    ) : (
+                                        <>
+                                            <Send className="h-4 w-4" />
+                                            Publish Article
+                                        </>
+                                    )}
+                                </Button>
+                            </AlertDialogTrigger>
+                            <AlertDialogContent>
+                                <AlertDialogHeader>
+                                    <AlertDialogTitle>Do you want to publish this article?</AlertDialogTitle>
+                                    <AlertDialogDescription>
+                                        This article will be published publicly. Please check the details and click continue to publish.
+                                    </AlertDialogDescription>
+                                </AlertDialogHeader>
+                                <AlertDialogFooter>
+                                    <AlertDialogCancel onClick={() => setIsSubmitting(false)}>Cancel</AlertDialogCancel>
+                                    <AlertDialogAction onClick={handleSubmit}>Continue</AlertDialogAction>
+                                </AlertDialogFooter>
+                            </AlertDialogContent>
+                        </AlertDialog>
                     </div>
                 </div>
             </form>

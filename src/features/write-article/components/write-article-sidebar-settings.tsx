@@ -3,10 +3,13 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { 
-  Upload, Tag, FolderOpen, Link, X, Plus, Loader2, Image as ImageIcon 
+  Upload, Tag, FolderOpen, Link, X, Plus, Loader2, Image as ImageIcon, 
+  FileText
 } from "lucide-react";
 import { ArticleFormData } from "@/types/index";
 import { useState } from "react";
+import { ARTICLE_CATEGORIES } from "@/constants/category";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 interface SidebarProps {
   formData: ArticleFormData;
@@ -36,6 +39,7 @@ export default function WriteArticleSidebarSetting({
   
 }: SidebarProps) {
   const [dragOver, setDragOver] = useState(false);
+  const CATEGORY_OPTIONS = ARTICLE_CATEGORIES;
 
   const handleDragOver = (e: React.DragEvent) => {
     e.preventDefault();
@@ -168,7 +172,22 @@ export default function WriteArticleSidebarSetting({
             <h3 className="font-semibold text-gray-700 dark:text-gray-200">Article Settings</h3>
           </div>
           <div className="p-4 space-y-5">
-            
+            {/* Excerpt Input */}
+            <div className="space-y-2">
+              <div className="flex items-center gap-2">
+                <FileText className="h-3.5 w-3.5" />
+                <Label htmlFor="excerpt" className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                  Excerpt
+                </Label>
+              </div>
+              <textarea
+                id="excerpt"
+                value={formData.excerpt}
+                onChange={(e) => handleInputChange('excerpt', e.target.value)}
+                placeholder="Enter excerpt"
+                className="w-full border border-gray-200 dark:border-gray-700 rounded-md p-2 text-sm p-2"
+              />
+            </div>
             {/* Slug */}
             <div className="space-y-2">
               <div className="flex items-center justify-between">
@@ -212,13 +231,21 @@ export default function WriteArticleSidebarSetting({
                 <FolderOpen className="h-3.5 w-3.5" />
                 Category
               </Label>
-              <Input
-                id="category"
+              <Select
                 value={formData.category}
-                onChange={(e) => handleInputChange('category', e.target.value)}
-                placeholder="e.g., Technology, Tutorial, News"
-                className="border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 placeholder:text-gray-500 dark:placeholder:text-gray-400 focus:border-blue-500 dark:focus:border-blue-400 focus:ring-blue-500 dark:focus:ring-blue-400"
-              />
+                onValueChange={(value: any) => handleInputChange('category', value)}
+              >
+                <SelectTrigger className="w-full">
+                  <SelectValue placeholder="Select a category" />
+                </SelectTrigger>
+                <SelectContent>
+                  {CATEGORY_OPTIONS.map((category) => (
+                    <SelectItem key={category} value={category}>
+                      {category}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             </div>
 
             {/* Tags */}
