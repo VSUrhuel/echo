@@ -23,7 +23,7 @@ export const SiteHeader = () => {
     const { scrollYProgress } = useScroll()
 
     React.useEffect(() => {
-        const unsubscribe = scrollYProgress.on('change', (latest) => {
+        const unsubscribe = scrollYProgress.on('change', (latest : any) => {
             setScrolled(latest > 0.05)
         })
         return () => unsubscribe()
