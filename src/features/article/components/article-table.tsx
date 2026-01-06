@@ -10,6 +10,7 @@ import { useRouter } from "next/navigation";
 import { SupabaseClient } from "@supabase/supabase-js";
 import { createClient } from "@/utils/supabase/client";
 import { setupFsCheck } from "next/dist/server/lib/router-utils/filesystem";
+import useArticleAction from "../hooks/useArticleAction";
 
 interface ArticleTableProps {
   articles: Article[],
@@ -17,6 +18,7 @@ interface ArticleTableProps {
 }
 
 export default function ArticleTable({articles, loading}: ArticleTableProps) {
+    const { handleHardDeleteArticle } = useArticleAction()
     const [searchParams, setSearchParams] = useState({
         search: ""
     })
@@ -106,7 +108,7 @@ export default function ArticleTable({articles, loading}: ArticleTableProps) {
                                 Edit
                               </DropdownMenuItem>
                             )}
-                            <DropdownMenuItem className="text-destructive">
+                            <DropdownMenuItem onClick={() => handleHardDeleteArticle(article.id)} className="text-destructive">
                               <Trash2 className="mr-2 h-4 w-4" />
                               Delete
                             </DropdownMenuItem>
