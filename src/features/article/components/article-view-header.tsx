@@ -3,6 +3,7 @@
 import { Profile } from "@/types";
 import { CalendarDays, User } from "lucide-react";
 import Image from "next/image";
+import formatDate from "../utils/format-date";
 
 interface ArticleViewHeaderProps {
   title: string;
@@ -11,6 +12,7 @@ interface ArticleViewHeaderProps {
   coverImage: string;
   category?: string;
   readTime?: string;
+  isDraft?: boolean;
 }
 
 export default function ArticleViewHeader({
@@ -19,16 +21,22 @@ export default function ArticleViewHeader({
   publishDate,
   coverImage,
   category,
-  readTime
+  readTime,
+  isDraft
 }: ArticleViewHeaderProps) {
-  const formattedDate = new Date(publishDate).toLocaleDateString('en-US', {
-    month: 'long',
-    day: 'numeric',
-    year: 'numeric'
-  });
-
+  
+  console.log(status)
   return (
     <header className="mb-8 lg:mb-12">
+      
+      {isDraft && (
+        <div className="mb-4">
+          <span className={`flex items-center px-3 py-1 text-sm font-medium text-primary-600 dark:text-primary-400 ${isDraft ? 'bg-red-50 dark:bg-red-900/30' : 'bg-green-50 dark:bg-green-900/30'} rounded-full`}>
+            {isDraft ? 'Draft' : 'Published'}
+          </span>
+        </div>
+      )}
+      
       {/* Category Badge */}
       {category && (
         <div className="mb-4">
@@ -37,6 +45,7 @@ export default function ArticleViewHeader({
           </span>
         </div>
       )}
+
 
       {/* Main Title */}
       <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-gray-900 dark:text-white leading-tight tracking-tight mb-6">
@@ -80,7 +89,7 @@ export default function ArticleViewHeader({
         <div className="flex items-center gap-4 text-sm">
           <div className="flex items-center gap-2">
             <CalendarDays className="w-4 h-4" />
-            <time dateTime={publishDate}>{formattedDate}</time>
+            <time dateTime={publishDate}>{formatDate(publishDate)}</time>
           </div>
           {readTime && (
             <>
@@ -104,13 +113,6 @@ export default function ArticleViewHeader({
         {/* Optional: Gradient overlay for better text contrast */}
         <div className="absolute inset-0 bg-gradient-to-t from-black/10 via-transparent to-transparent" />
       </div>
-      )}
-
-      {/* Optional: Image Caption */}
-      {author.first_name && (
-        <p className="mt-3 text-sm text-gray-500 dark:text-gray-500 text-center italic">
-          Photo by {author.first_name} {author.last_name}
-        </p>
       )}
     </header>
   );

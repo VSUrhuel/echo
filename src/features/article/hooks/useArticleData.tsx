@@ -8,6 +8,10 @@ export const useArticleData = ({articleId}: {articleId?: string | undefined} = {
     const [selectedArticle, setSelectedArticle] = useState<ArticleFormData | null>(null);
     const [article, setArticle] = useState<Article | null>(null);
     const [loading, setLoading] = useState(false);
+    const articlePerPage = 10;
+    const [page, setPage] = useState(1);
+    const [totalPages, setTotalPages] = useState(0);
+    const [paginatedArticles, setPaginatedArticles] = useState<Article[]>([]);
     
     useEffect(() => {
         const fetchArticles = async () => {
@@ -62,6 +66,7 @@ export const useArticleData = ({articleId}: {articleId?: string | undefined} = {
                     category: data.category,
                     tags: typeof data.tags === 'string' ? data.tags.replace(/[\[\]"]/g, '').split(',').map((tag: string) => tag.trim()) : (Array.isArray(data.tags) ? data.tags : []),
                     cover_image_url: data.cover_image_url,
+                    status: data.status,
                 } as ArticleFormData
 
                 const article = {
@@ -88,10 +93,36 @@ export const useArticleData = ({articleId}: {articleId?: string | undefined} = {
         fetchArticle();
     }, [articleId]);
 
+    useEffect(() => {
+        const paginatedArticles = articles.slice((page - 1) * articlePerPage, page * articlePerPage);
+        setPaginatedArticles(paginatedArticles)
+    }, [page, articles]);
+    
+    useEffect(() => {
+        setTotalPages(Math.ceil(articles.length / articlePerPage));
+    }, [articles]);
+
+    const prevPage = () => {
+        if (page > 1) {
+            setPage(page - 1);
+        }
+    }
+
+    const nextPage = () => {
+        if (page < totalPages) {
+            setPage(page + 1);
+        }
+    }
+
     return {
         articles,
         loading,
         selectedArticle,
-        article
+        paginatedArticles,
+        article,
+        page,
+        totalPages,
+        prevPage,
+        nextPage
     }
 }

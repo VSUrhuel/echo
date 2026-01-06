@@ -5,8 +5,11 @@ import { Edit, Eye, MoreHorizontal, Plus, Search, Trash2 } from "lucide-react"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
 import { Button } from "@/components/ui/button";
 import { Article } from "@/types";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import { SupabaseClient } from "@supabase/supabase-js";
+import { createClient } from "@/utils/supabase/client";
+import { setupFsCheck } from "next/dist/server/lib/router-utils/filesystem";
 
 interface ArticleTableProps {
   articles: Article[],
@@ -17,7 +20,17 @@ export default function ArticleTable({articles, loading}: ArticleTableProps) {
     const [searchParams, setSearchParams] = useState({
         search: ""
     })
+    const supabase = createClient();
+    const [currentUserId, setCurrentUserId] = useState<string | null>(null);
 
+    useEffect(() => {
+        const fetchCurrentUser = async () => {
+          const { data: { user } } = await supabase.auth.getUser();
+          setCurrentUserId(user?.id as string);
+        }
+        fetchCurrentUser();
+    }, [articles])
+    
     const router = useRouter();
 
     const filteredArticles = articles.filter((article) => {
@@ -87,10 +100,12 @@ export default function ArticleTable({articles, loading}: ArticleTableProps) {
                               <Eye className="mr-2 h-4 w-4" />
                               View
                             </DropdownMenuItem>
-                            <DropdownMenuItem onClick={() => router.push(`/admin-articles/edit/${article.id}`)}>
-                              <Edit className="mr-2 h-4 w-4" />
-                              Edit
-                            </DropdownMenuItem>
+                            {currentUserId === article.author_id && (
+                              <DropdownMenuItem onClick={() => router.push(`/admin-articles/edit/${article.id}`)}>
+                                <Edit className="mr-2 h-4 w-4" />
+                                Edit
+                              </DropdownMenuItem>
+                            )}
                             <DropdownMenuItem className="text-destructive">
                               <Trash2 className="mr-2 h-4 w-4" />
                               Delete

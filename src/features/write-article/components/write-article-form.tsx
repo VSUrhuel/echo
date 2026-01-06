@@ -20,14 +20,14 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog"
 import { ArticleFormData } from "@/types";
-
+import { useRouter } from "next/navigation";
 interface WriteArticleFormProps {
     articleFormData?: ArticleFormData;
     articleId?: number;
 }
 
 export default function WriteArticleForm({articleFormData, articleId}: WriteArticleFormProps) {
-    // 1. Call your custom hook
+    const router = useRouter();
     const {
         formData,
         isUploading,
@@ -68,6 +68,7 @@ export default function WriteArticleForm({articleFormData, articleId}: WriteArti
         try {
             await handlePublishArticle();
         } finally {
+            router.push('/admin-articles');
             setIsSubmitting(false);
         }
     };
