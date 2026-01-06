@@ -65,7 +65,6 @@ export function AdminSidebar() {
   const pathname = usePathname()
 
   const handleSignOut = async () => {
-    console.log("Sign out")
     await createClient().auth.signOut()
     window.location.href = "/"
   }

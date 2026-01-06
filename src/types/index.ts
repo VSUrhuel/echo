@@ -60,7 +60,7 @@ export interface Article {
   slug: string | null;
   cover_image_url: string | null;
   category: string | null;
-  tags: string | null; 
+  tags: string [] | null; 
   author_id: UUID | null; 
   status: ArticleStatus;
   published_at: ISODateString | null;
@@ -68,6 +68,7 @@ export interface Article {
   // Tracking
   created_at: ISODateString;
   updated_at: ISODateString;
+  author?: Profile;
 }
 
 export interface ArticleFormData {

@@ -19,15 +19,22 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog"
+import { ArticleFormData } from "@/types";
+import { useRouter } from "next/navigation";
+interface WriteArticleFormProps {
+    articleFormData?: ArticleFormData;
+    articleId?: number;
+}
 
-export default function WriteArticleForm() {
-    // 1. Call your custom hook
+export default function WriteArticleForm({articleFormData, articleId}: WriteArticleFormProps) {
+    const router = useRouter();
     const {
         formData,
         isUploading,
         isGeneratingSlug,
         tagInput,
         setTagInput,
+        setFormData,
         handleInputChange,
         generateSlug,
         handleAddTag,
@@ -35,7 +42,7 @@ export default function WriteArticleForm() {
         handleImageUpload,
         handlePublishArticle,
         handleDraftArticle
-    } = useWriteArticleAction();
+    } = useWriteArticleAction(articleFormData, articleId);
 
     const [editor, setEditor] = useState<Editor | null>(null);
     const [isSubmitting, setIsSubmitting] = useState(false);
@@ -53,7 +60,7 @@ export default function WriteArticleForm() {
             });
         }
     }, [handleInputChange]);
-
+    
     // 3. Handle Submit
     const handleSubmit = async (e?: React.FormEvent | React.MouseEvent) => {
         if (e) e.preventDefault();
@@ -61,6 +68,7 @@ export default function WriteArticleForm() {
         try {
             await handlePublishArticle();
         } finally {
+            router.push('/admin-articles');
             setIsSubmitting(false);
         }
     };
@@ -87,7 +95,7 @@ export default function WriteArticleForm() {
                         value={formData.title} 
                         onChange={(e) => handleInputChange('title', e.target.value)} 
                         placeholder="Enter your article title..." 
-                        className="rounded-lg border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-white text-3xl font-bold p-6 focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 focus:border-blue-500 dark:focus:border-blue-400 transition-all"
+                        className="rounded-lg border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-white text-sm md:text-xl font-bold p-6 focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 focus:border-blue-500 dark:focus:border-blue-400 transition-all"
                     />
                 </div>
 
@@ -98,7 +106,7 @@ export default function WriteArticleForm() {
                                 <h2 className="font-semibold text-gray-700 dark:text-gray-200">Content</h2>
                             </div>
                             <div className="p-6">
-                                <SimpleEditor onEditorReady={handleEditorReady} />
+                                <SimpleEditor onEditorReady={handleEditorReady} content={formData.content} />
                             </div>
                         </div>
                     </div>
