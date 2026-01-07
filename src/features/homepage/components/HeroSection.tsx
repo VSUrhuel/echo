@@ -48,7 +48,7 @@ export function HeroSection() {
               asChild
               className="w-full sm:w-auto bg-[#207bbe] hover:bg-[#3088c6] text-white font-nunito-sans text-sm sm:text-lg font-normal px-4 py-3 sm:px-10 sm:py-6 rounded-lg transition-all shadow-lg"
             >
-              <Link href="/login" className="flex items-center justify-center">
+              <Link href="/academics" className="flex items-center justify-center">
                  Explore Curriculum
               </Link>
             </Button>
