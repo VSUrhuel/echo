@@ -3,14 +3,14 @@ import Link from 'next/link'
 import { Logo } from '../Logo/logo'
 import { Menu, X } from 'lucide-react'
 import React from 'react'
-import { useScroll, motion } from 'motion/react'
+import { motion, useScroll } from 'framer-motion'
 import { cn } from '@/lib/utils'
 import { LoadingScreen } from '@/components/ui/loading-screen'
 import { createClient } from '@/utils/supabase/client'
 
 const menuItems = [
-  { name: 'Home', href: '#link' },
-  { name: 'Academics', href: '#link' },
+  { name: 'Home', href: '/' },
+  { name: 'Academics', href: '/academics' },
   { name: 'Faculty', href: '#link' },
   { name: 'News & Updates', href: '#link' },
   { name: 'Resources', href: '#link' },
@@ -37,10 +37,13 @@ export const SiteHeader = () => {
                 <div className={cn('mx-auto w-full px-3 transition-all duration-100 lg:px-7 bg-background/80 backdrop-blur-2xl lg:bg-transparent lg:backdrop-blur-none', scrolled && 'lg:bg-background/80 lg:backdrop-blur-2xl')}>
                     <motion.div
                         key={1}
+                        initial={{ paddingTop: 20, paddingBottom: 20 }}
+  animate={{ paddingTop: scrolled ? 12 : 20, paddingBottom: scrolled ? 12 : 20 }}
+  transition={{ duration: 0.25, ease: 'easeOut' }}
                         className={cn('relative flex flex-wrap items-center justify-between gap-6 py-3 duration-200 lg:gap-0 lg:py-5', scrolled && 'lg:py-3')}>
                         <div className="flex max-w-7xl flex-1 items-center justify-between gap-12 lg:w-auto">
                             <Link
-                                href="/"
+                                href="/academics"
                                 aria-label="home"
                                 className="flex items-center space-x-2">
                                 <Logo scrolled={scrolled} />
