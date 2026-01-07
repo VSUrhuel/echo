@@ -33,7 +33,7 @@ export interface Profile extends SoftDeletable, Auditable {
   bio: string | null;
   education: string | null;
   consultation_hours: string | null;
-  is_active: boolean;
+  status: string | null;
 }
 
 export interface ProfileUpdate {
@@ -43,7 +43,7 @@ export interface ProfileUpdate {
   designation?: string | null;
   specialization?: string | null;
   image_url?: string | null;
-  is_active?: boolean;
+  status?: string | null;
   updated_by?: UUID; 
 }
 
