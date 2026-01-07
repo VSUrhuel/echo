@@ -1,5 +1,6 @@
 import Image from "next/image"
 import Link from "next/link"
+import { Handshake, ExternalLink } from 'lucide-react'
 
 // Temporary Data – can be replaced later with Supabase data
 type Partner = {
@@ -65,16 +66,15 @@ export default function CompanyLinkages() {
   return (
     <section className="max-w-7xl mx-auto px-6 py-20">
       {/* Header */}
-      <div className="text-center max-w-3xl mx-auto mb-14">
-        <span className="inline-block mb-3 px-4 py-1 rounded-full bg-blue-50 text-blue-700 text-sm font-medium">
+      <div className="text-center max-w-3xl mx-auto mb-16">
+        <span className="inline-flex items-center gap-2 mb-3 px-4 py-1 rounded-full rounded-bl-none bg-blue-50 text-[#207bbe] text-sm font-medium">
+          <Handshake className="size-4" />
           Industry Partners
         </span>
-
-        <h2 className="text-3xl font-bold text-gray-900 mb-3">
+        <h2 className="text-2xl md:text-4xl font-bold text-gray-900">
           OJT Company Linkages
         </h2>
-
-        <p className="text-gray-600">
+        <p className="text-gray-600 mt-2 text-sm md:text-base">
           Our program maintains strong partnerships with leading media
           organizations, government agencies, and development institutions to
           provide students with valuable hands-on training experiences.
@@ -82,12 +82,17 @@ export default function CompanyLinkages() {
       </div>
 
       {/* Partner Cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
         {partners.map((partner) => (
-          <div
+          <Link
             key={partner.id}
-            className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6 text-center hover:shadow-md transition"
+            href={partner.href || "#"} // Uses href if available, defaults to #
+            className="group relative block bg-white rounded-lg md:rounded-2xl border border-gray-200 shadow-sm p-6 text-center hover:shadow-lg transition cursor-pointer"
           >
+            <div className="absolute top-3 right-3 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+              <ExternalLink className="size-4 text-gray-400 hover:text-[#207bbe]" />
+            </div>
+
             <div className="relative h-20 w-full mb-4">
               <Image
                 src={partner.logo}
@@ -104,7 +109,7 @@ export default function CompanyLinkages() {
             <p className="text-xs text-gray-500 mt-1">
               {partner.category}
             </p>
-          </div>
+          </Link>
         ))}
       </div>
 
@@ -114,7 +119,7 @@ export default function CompanyLinkages() {
           Interested in becoming a partner institution?{" "}
           <Link
             href="/contact"
-            className="text-blue-600 font-medium hover:underline"
+            className="text-[#207bbe] font-medium hover:underline"
           >
             Contact us
           </Link>

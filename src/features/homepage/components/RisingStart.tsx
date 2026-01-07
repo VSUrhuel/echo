@@ -1,4 +1,5 @@
 import Image from "next/image"
+import { Award } from 'lucide-react'
 
 // Temporary Data – replace later with Supabase
 type RisingStar = {
@@ -31,11 +32,11 @@ const risingStars: RisingStar[] = [
 export default function RisingStars() {
   return (
     <section className="max-w-7xl mx-auto px-6 pb-20">
-      <div className="bg-gray-50 rounded-3xl p-10">
+      <div className="bg-blue-50 rounded-3xl p-5 md:p-8">
         {/* Header */}
         <div className="flex items-start gap-4 mb-8">
-          <div className="h-12 w-12 flex items-center justify-center rounded-full bg-blue-100 text-blue-700">
-            🎓
+          <div className="h-12 w-12 flex items-center justify-center rounded-full bg-blue-100 text-[#207bbe]">
+            <Award className="h-6 w-6" />
           </div>
 
           <div>
@@ -49,13 +50,13 @@ export default function RisingStars() {
         </div>
 
         {/* Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {risingStars.map((student) => (
             <div
               key={student.id}
-              className="bg-white rounded-2xl border border-gray-100 p-6 flex items-center gap-5 shadow-sm hover:shadow-md transition"
+              className="bg-white rounded-full rounded-bl-lg border border-gray-100 shadow-sm hover:shadow-md transition flex items-center p-4 gap-4"
             >
-              <div className="relative h-14 w-14 rounded-full overflow-hidden">
+              <div className="relative w-16 md:w-20 aspect-square shrink-0 rounded-full overflow-hidden bg-gray-50">
                 <Image
                   src={student.image}
                   alt={student.name}
@@ -63,17 +64,16 @@ export default function RisingStars() {
                   className="object-cover"
                 />
               </div>
-
-              <div>
-                <h4 className="font-semibold text-gray-900">
+              <div className="flex flex-col justify-center">
+                <h4 className="font-semibold text-gray-900 text-sm md:text-base">
                   {student.name}
                 </h4>
 
-                <p className="text-sm text-blue-600 font-medium">
+                <p className="text-xs md:text-sm text-[#207bbe] font-medium">
                   {student.yearLevel}
                 </p>
 
-                <p className="text-sm text-gray-600 mt-1">
+                <p className="text-xs text-gray-600 mt-1 line-clamp-2">
                   {student.achievement}
                 </p>
               </div>
