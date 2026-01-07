@@ -121,9 +121,12 @@ export interface Partner extends SoftDeletable, Auditable {
   id: number;
   name: string;
   logo_url: string | null;
+  description: string | null;
   type: string | null;
   location: string | null;
   website_url: string | null;
+  available_slot: number | null;
+  contact_email: string | null;
   is_active: boolean;
 }
 
