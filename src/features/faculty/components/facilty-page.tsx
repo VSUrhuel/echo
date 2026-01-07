@@ -7,6 +7,8 @@ import FacultyDialog from "@/features/faculty/components/faculty-dialog"
 import FacultyFilters from "@/features/faculty/components/faculty-filters"
 import FacultyTable from "@/features/faculty/components/faculty-table"
 import { Profile } from "@/types"
+import { Kufam } from "next/font/google"
+import { toast } from "sonner"
 
 export default function FacultyPage() {
     const { 
@@ -28,14 +30,25 @@ export default function FacultyPage() {
         filteredProfiles
     } = useFacultyData()
 
-    const { onSubmit, handleImageUpload, isSaving, isUploading } = useFacultyAction()
+    const { onSubmit, handleImageUpload, isSaving, isUploading, handleSoftDelete } = useFacultyAction()
 
     const handleSubmit = async (formData: Profile, editingProfileId: number | null) => {
+        if(formData.email == '') {
+            toast.error('Email is required')
+            return
+        }
+        // ensure all values are not null
+        if(formData.first_name == '' || formData.last_name == '' || formData.designation == '' || formData.specialization == '' ||  formData.bio == '' || formData.education == '' || formData.consultation_hours == '' || formData.status == '') {
+            toast.error('All fields except Image are required')
+            return
+        }
         await onSubmit(formData, editingProfileId, () => {
             setIsAddDialogOpen(false)
             resetForm()
         })
     }
+
+
 
     return (
         <div className="flex flex-col min-h-screen">
@@ -61,8 +74,7 @@ export default function FacultyPage() {
                         setIsAddDialogOpen(true)
                     }}
                     onDelete={(id: string) => {
-                        // Implement delete logic if needed
-                        console.log("Delete", id)
+                        handleSoftDelete(id)
                     }}
                 />
 

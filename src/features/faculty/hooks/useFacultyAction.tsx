@@ -10,15 +10,7 @@ export default function useFacultyAction() {
     const [isUploading, setIsUploading] = useState(false)
 
     const onSubmit = async (data: Profile, editingProfileId: number | null, onSuccess: () => void) => {
-        if(data.email == null) {
-            toast.error('Email is required')
-            return
-        }
-        // ensure all values are not null
-        if(data.first_name == null || data.last_name == null || data.designation == null || data.specialization == null ||  data.bio == null || data.education == null || data.consultation_hours == null || data.status == null) {
-            toast.error('All fields except Image are required')
-            return
-        }
+        
         setIsSaving(true)
         try {
             if (data.id) {
@@ -123,11 +115,29 @@ export default function useFacultyAction() {
         }
     }
 
+    const handleSoftDelete = async (id: string) => {
+        try {
+            const { error } = await supabase.from('profiles').update({
+                is_deleted: true,
+                deleted_at: new Date().toISOString()
+            }).eq('id', id)
+            if (error) {
+                toast.error('Error deleting profile')
+                throw error
+            }
+            toast.success('Profile deleted successfully')
+        } catch (error) {
+            console.error('Error deleting profile: ', error)
+            toast.error('Error deleting profile')
+        }
+    }
+
     return {
         onSubmit,
         handleImageUpload,
         updateProfile,
         createProfile,
+        handleSoftDelete,
         isSaving,
         isUploading
     }

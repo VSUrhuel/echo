@@ -12,7 +12,7 @@ export default function FacultyHeader({
 }: FacultyHeaderProps) {
     return (
         <header className="sticky top-0 z-10 flex h-16 items-center justify-between gap-4 border-b border-border bg-background px-6">
-            <h1 className="text-lg font-semibold text-foreground">OJT Company Linkages</h1>
+            <h1 className="text-lg font-semibold text-foreground">VSU DevCom Faculty</h1>
             
             <Button 
                 className="bg-primary text-primary-foreground hover:bg-primary/90"

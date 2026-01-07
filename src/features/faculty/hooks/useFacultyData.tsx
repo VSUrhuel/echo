@@ -63,7 +63,7 @@ export default function useFacultyData() {
         const fetchFaculties = async () => {
             setIsLoading(true)
             try {
-                const {data, error} = await supabase.from('profiles').select('*')
+                const {data, error} = await supabase.from('profiles').select('*').eq('is_deleted', false)
                 if (error) {
                     toast.error('Error fetching faculties: ' + error.message)
                 } else {
