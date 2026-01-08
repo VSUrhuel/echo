@@ -101,7 +101,7 @@ export interface Thesis extends Auditable {
 /* 4. COURSES (Added Tracking)                                               */
 /* -------------------------------------------------------------------------- */
 export type CourseLevel = 'Undergraduate' | 'Graduate';
-
+export type Semester = '1st Sem' | '2nd Sem' | 'Summer';
 export interface Course extends Auditable { 
   id: number;
   course_code: string;
@@ -110,7 +110,7 @@ export interface Course extends Auditable {
   units: number | null;
   program_level: CourseLevel | null;
   year_level: number | null;
-  semester: number | null;
+  semester: Semester | null;
   syllabus_url: string | null;
 }
 

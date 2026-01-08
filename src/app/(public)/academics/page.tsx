@@ -131,7 +131,6 @@ export default function AcademicsPage() {
                       </button>
                     ))}
                   </div>
-
                   <div className="grid gap-6 lg:grid-cols-2">
                     <SemesterCard
                       title="First Semester"
@@ -143,7 +142,15 @@ export default function AcademicsPage() {
                       courses={groupedCourses.semester2}
                       onCourseClick={setSelectedCourse}
                     />
+                    {groupedCourses.summer.length > 0 && (
+                      <SemesterCard
+                        title="Summer"
+                        courses={groupedCourses.summer}
+                        onCourseClick={setSelectedCourse}
+                      />
+                    )}
                   </div>
+                  
                 </>
               )}
 
