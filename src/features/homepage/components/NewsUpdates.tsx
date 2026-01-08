@@ -1,6 +1,7 @@
 import Image from "next/image"
 import Link from "next/link"
-
+import { ExternalLink, MoveRight } from 'lucide-react'
+import { AspectRatio } from "@/components/ui/aspect-ratio"
 
 //Temporary Data, will replace this later with the data from supabase
 type NewsItem = {
@@ -20,7 +21,7 @@ const newsData: NewsItem[] = [
     title: "DevCom Students Win Regional Documentary Competition",
     description:
       "Our students showcased exceptional storytelling skills at the 2024 Visayas Media Festival, bringing home top honors.",
-    image: "/images/DevcomHeroSample.png",
+    image: "/images/ThumbnailSample1.png",
   },
   {
     id: 2,
@@ -29,7 +30,7 @@ const newsData: NewsItem[] = [
     title: "Community Radio Workshop Series Launched",
     description:
       "A new workshop series aims to train students in community broadcasting techniques for rural development.",
-    image: "/images/DevcomHeroSample.png",
+    image: "/images/ThumbnailSample1.png",
   },
   {
     id: 3,
@@ -38,7 +39,7 @@ const newsData: NewsItem[] = [
     title: "Research Paper Published in International Journal",
     description:
       "Dr. Maria Santos' research on participatory communication in agricultural extension gains international recognition.",
-    image: "/images/DevcomHeroSample.png",
+    image: "/images/ThumbnailSample1.png",
   },
 ]
 
@@ -46,62 +47,75 @@ export default function NewsUpdates() {
   return (
     <section className="max-w-7xl mx-auto px-6 py-16">
       {/* Header */}
-      <div className="flex items-center justify-between mb-10">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 md:gap-0 mb-6 md:mb-10">
         <div>
-          <h2 className="text-3xl font-bold text-gray-900">
-            News & Updates
+          <h2 className="text-2xl md:text-4xl font-bold text-gray-900">
+            Latest News
           </h2>
-          <p className="text-gray-600 mt-2">
+          <p className="text-gray-600 mt-2 text-sm md:text-base">
             Stay updated with the latest from DevCom
           </p>
         </div>
 
-        <Link
-          href="/news"
-          className="text-blue-600 font-medium hover:underline flex items-center gap-1"
+        <a
+          href={`/news`}
+          className="inline-flex items-center gap-2 text-[#207bbe] font-medium px-2 py-2 -ml-2 md:ml-0 rounded-lg hover:bg-blue-50 transition-colors text-sm md:text-base"
         >
-          View All News →
-        </Link>
+          View All News 
+          <MoveRight className="size-4" />
+        </a>
       </div>
 
       {/* Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+      <div className="
+        flex overflow-x-auto pb-6 gap-4 snap-x snap-mandatory scrollbar-hide 
+        md:grid md:grid-cols-3 md:gap-3 md:overflow-visible md:pb-0
+      ">
         {newsData.map((item) => (
           <div
             key={item.id}
-            className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden hover:shadow-md transition"
+            className="
+              min-w-[85vw] sm:min-w-[320px] md:min-w-0 snap-center                              
+              bg-white rounded-lg md:rounded-2xl shadow-sm border border-gray-200 overflow-hidden hover:shadow-lg transition flex flex-col
+            "
           >
-            <div className="relative h-56 w-full">
-              <Image
-                src={item.image}
-                alt={item.title}
-                fill
-                className="object-cover"
-              />
+            <div className="w-full">
+              <AspectRatio ratio={16 / 9}>
+                <Image
+                  src={item.image}
+                  alt={item.title}
+                  fill
+                  className="object-cover"
+                />
+              </AspectRatio>
             </div>
-
-            <div className="p-6">
-              <div className="flex items-center gap-3 text-sm mb-3">
-                <span className="px-3 py-1 rounded-full bg-blue-50 text-blue-700 font-medium">
+            <div className="p-4 md:p-6 flex flex-col flex-1">
+              <div className="flex items-center justify-between text-sm mb-3">
+                <Link
+                  href={`/news?category=${item.category}`} 
+                  className="px-3 py-1 rounded-full rounded-bl-none text-[#207bbe] bg-blue-50 border border-blue-300 font-medium text-xs md:text-sm"
+                >
                   {item.category}
-                </span>
-                <span className="text-gray-500">{item.date}</span>
+                </Link>
+                <span className="text-gray-500 text-xs md:text-sm">{item.date}</span>
               </div>
-
-              <h3 className="text-lg font-semibold text-gray-900 mb-2">
+              <h3 className="text-base md:text-lg font-semibold text-gray-900 mb-2">
                 {item.title}
               </h3>
-
-              <p className="text-gray-600 text-sm mb-4">
+        
+              <p className="text-gray-600 text-sm mb-6 flex-1 line-clamp-3 md:line-clamp-none">
                 {item.description}
               </p>
-
-              <Link
-                href={`/news/${item.id}`}
-                className="text-blue-600 font-medium hover:underline"
-              >
-                Read More →
-              </Link>
+        
+              <div>
+                <a
+                  href={`/news/${item.id}`}
+                  className="inline-flex items-center gap-2 text-[#207bbe] font-medium px-2 py-2 -ml-2 rounded-lg hover:bg-blue-50 transition-colors text-sm"
+                >
+                  Read More 
+                  <ExternalLink className="size-4" />
+                </a>
+              </div>
             </div>
           </div>
         ))}

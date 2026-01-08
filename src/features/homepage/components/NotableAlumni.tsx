@@ -1,4 +1,5 @@
 import Image from "next/image"
+import { GraduationCap } from 'lucide-react'
 
 // Temporary Data – replace later with Supabase
 type Alumni = {
@@ -68,15 +69,14 @@ export default function NotableAlumni() {
     <section className="max-w-7xl mx-auto px-6 py-20">
       {/* Header */}
       <div className="text-center max-w-3xl mx-auto mb-16">
-        <span className="inline-flex items-center gap-2 px-4 py-1 rounded-full bg-yellow-100 text-yellow-800 text-sm font-medium mb-4">
-          🏆 Success Stories
+        <span className="inline-flex items-center gap-2 mb-3 px-4 py-1 rounded-full rounded-bl-none bg-yellow-50 text-yellow-600 text-sm font-medium">
+          <GraduationCap className="size-4" />
+          Success Stories
         </span>
-
-        <h2 className="text-3xl font-bold text-gray-900 mb-3">
+        <h2 className="text-2xl md:text-4xl font-bold text-gray-900">
           Notable Alumni
         </h2>
-
-        <p className="text-gray-600">
+        <p className="text-gray-600 mt-2 text-sm md:text-base">
           Our graduates have gone on to make significant contributions in
           media, development work, and public service across the Philippines
           and beyond.
@@ -84,11 +84,17 @@ export default function NotableAlumni() {
       </div>
 
       {/* Alumni Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+      <div className="
+        flex overflow-x-auto pb-6 gap-4 snap-x snap-mandatory scrollbar-hide 
+        md:grid md:grid-cols-2 lg:grid-cols-4 md:gap-3 md:overflow-visible md:pb-0
+      ">
         {alumniData.map((alumni) => (
           <div
             key={alumni.id}
-            className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden hover:shadow-md transition"
+            className="
+              min-w-[85vw] sm:min-w-[320px] md:min-w-0 snap-center
+              bg-white rounded-lg md:rounded-2xl border border-gray-100 shadow-sm overflow-hidden hover:shadow-md transition
+            "
           >
             {/* Image */}
             <div className="relative h-56 w-full">
@@ -119,7 +125,7 @@ export default function NotableAlumni() {
                 </p>
               </div>
 
-              <p className="text-sm text-blue-600 mb-4">
+              <p className="text-sm text-[#207bbe] mb-4">
                 {alumni.achievement}
               </p>
 
