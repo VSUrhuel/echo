@@ -84,11 +84,17 @@ export default function NotableAlumni() {
       </div>
 
       {/* Alumni Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3">
+      <div className="
+        flex overflow-x-auto pb-6 gap-4 snap-x snap-mandatory scrollbar-hide 
+        md:grid md:grid-cols-2 lg:grid-cols-4 md:gap-3 md:overflow-visible md:pb-0
+      ">
         {alumniData.map((alumni) => (
           <div
             key={alumni.id}
-            className="bg-white rounded-lg md:rounded-2xl border border-gray-100 shadow-sm overflow-hidden hover:shadow-md transition"
+            className="
+              min-w-[85vw] sm:min-w-[320px] md:min-w-0 snap-center
+              bg-white rounded-lg md:rounded-2xl border border-gray-100 shadow-sm overflow-hidden hover:shadow-md transition
+            "
           >
             {/* Image */}
             <div className="relative h-56 w-full">
@@ -119,7 +125,7 @@ export default function NotableAlumni() {
                 </p>
               </div>
 
-              <p className="text-sm text-blue-600 mb-4">
+              <p className="text-sm text-[#207bbe] mb-4">
                 {alumni.achievement}
               </p>
 
