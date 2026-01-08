@@ -1,14 +1,14 @@
 // hooks/useWriteArticleAction.ts
 import { createClient } from '@/utils/supabase/client';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { ArticleFormData } from '@/types';
 import { toast } from 'sonner';
 
-export const useWriteArticleAction = () => {
+export const useWriteArticleAction = (articleFormData?: ArticleFormData, propsArticleId?: number) => {
   const supabase = createClient();
   const [isUploading, setIsUploading] = useState(false);
   const [isGeneratingSlug, setIsGeneratingSlug] = useState(false);
-  const [formData, setFormData] = useState<ArticleFormData>({
+  const [formData, setFormData] = useState<ArticleFormData>(articleFormData || {
     title: '',
     content: '',
     excerpt: '',
@@ -20,6 +20,15 @@ export const useWriteArticleAction = () => {
   const [tagInput, setTagInput] = useState('');
   const [articleId, setArticleId] = useState<number | null>(null);
 
+  useEffect(() => {
+    if (articleFormData) {
+      setFormData(articleFormData);
+    }
+    if (propsArticleId) {
+      setArticleId(propsArticleId);
+    }
+  }, [articleFormData, propsArticleId]);
+
   const handlePublishArticle = async () => {
     await handleSaveArticle("published");
   }
@@ -30,7 +39,6 @@ export const useWriteArticleAction = () => {
 
   const handleSaveArticle = async (status: string) => {
     try {
-        console.log(formData);
         if(formData.title === '' || formData.content === '' || formData.category === '' || formData.tags.length === 0) {
             throw new Error('Please fill in all fields');
         }
@@ -51,7 +59,7 @@ export const useWriteArticleAction = () => {
             cover_image_url: formData.cover_image_url,
             author_id: currentUser,
             status: status,
-            published_at: status === "draft" ? null : new Date().toISOString(),
+            published_at: status === "draft" && articleId === null ? null : new Date().toISOString(),
             updated_at: new Date().toISOString(),
         };
 

@@ -50,11 +50,6 @@ const menuItems = [
     icon: Briefcase,
   },
   {
-    title: "Notable Alumni",
-    href: "/admin-alumni",
-    icon: GraduationCap,
-  },
-  {
     title: "Faculty",
     href: "/admin-faculty",
     icon: Users,
@@ -65,7 +60,6 @@ export function AdminSidebar() {
   const pathname = usePathname()
 
   const handleSignOut = async () => {
-    console.log("Sign out")
     await createClient().auth.signOut()
     window.location.href = "/"
   }

@@ -33,7 +33,7 @@ export interface Profile extends SoftDeletable, Auditable {
   bio: string | null;
   education: string | null;
   consultation_hours: string | null;
-  is_active: boolean;
+  status: string | null;
 }
 
 export interface ProfileUpdate {
@@ -43,7 +43,7 @@ export interface ProfileUpdate {
   designation?: string | null;
   specialization?: string | null;
   image_url?: string | null;
-  is_active?: boolean;
+  status?: string | null;
   updated_by?: UUID; 
 }
 
@@ -60,7 +60,7 @@ export interface Article {
   slug: string | null;
   cover_image_url: string | null;
   category: string | null;
-  tags: string | null; 
+  tags: string [] | null; 
   author_id: UUID | null; 
   status: ArticleStatus;
   published_at: ISODateString | null;
@@ -68,6 +68,7 @@ export interface Article {
   // Tracking
   created_at: ISODateString;
   updated_at: ISODateString;
+  author?: Profile;
 }
 
 export interface ArticleFormData {
@@ -120,9 +121,12 @@ export interface Partner extends SoftDeletable, Auditable {
   id: number;
   name: string;
   logo_url: string | null;
+  description: string | null;
   type: string | null;
   location: string | null;
   website_url: string | null;
+  available_slot: number | null;
+  contact_email: string | null;
   is_active: boolean;
 }
 
