@@ -4,10 +4,13 @@ import { useState } from "react"
 import { Download } from "lucide-react"
 import { useCourses } from "@/features/academics/hooks/use-courses"
 import { groupCoursesBySemester } from "@/features/academics/utils/group-courses"
+import { CourseDetailModal } from "@/features/academics/components/course-detail-modal"
+import type { Course } from "@/features/academics/types/coures"
 
 export default function AcademicsPage() {
   const [programLevel, setProgramLevel] = useState<"Undergraduate" | "Graduate">("Undergraduate")
   const [selectedYear, setSelectedYear] = useState(1)
+  const [selectedCourse, setSelectedCourse] = useState<Course | null>(null)
 
   const { courses, loading, error } = useCourses(
     programLevel,
@@ -15,6 +18,20 @@ export default function AcademicsPage() {
   )
 
   const groupedCourses = groupCoursesBySemester(courses)
+
+  const handleDownloadProspectus = () => {
+    const pdfUrl =
+      programLevel === "Undergraduate"
+        ? "/files/BSDC-Curriculum.pdf"
+        : "/files/MSDC-Program.pdf"
+
+    const link = document.createElement("a")
+    link.href = pdfUrl
+    link.download = `${programLevel.toLowerCase()}-prospectus.pdf`
+    document.body.appendChild(link)
+    link.click()
+    document.body.removeChild(link)
+  }
 
   return (
     <main className="w-full">
@@ -28,14 +45,16 @@ export default function AcademicsPage() {
                   strokeLinecap="round"
                   strokeLinejoin="round"
                   strokeWidth={2}
-                  d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"
+                  d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 16.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"
                 />
               </svg>
               BS Development Communication
             </span>
           </div>
 
-          <h1 className="text-balance text-4xl font-bold tracking-tight md:text-5xl">Academic Curriculum</h1>
+          <h1 className="text-balance text-4xl font-bold tracking-tight md:text-5xl">
+            Academic Curriculum
+          </h1>
 
           <p className="max-w-3xl text-balance text-lg leading-relaxed text-white/90">
             Our four-year program combines theoretical foundations with practical skills in communication for
@@ -48,7 +67,6 @@ export default function AcademicsPage() {
       {/* CONTENT SECTION */}
       <section className="bg-gray-50 px-6 py-16">
         <div className="mx-auto max-w-7xl space-y-8">
-          {/* HEADER WITH TOGGLE AND DOWNLOAD BUTTON */}
           <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
             <div>
               <h2 className="text-2xl font-bold">Course Offerings</h2>
@@ -58,12 +76,14 @@ export default function AcademicsPage() {
             </div>
 
             <div className="flex flex-wrap items-center gap-3">
-              <button className="inline-flex items-center gap-2 rounded-lg bg-[#FFB800] px-4 py-2.5 text-sm font-semibold text-black transition-colors hover:bg-[#E5A600]">
+              <button
+                onClick={handleDownloadProspectus}
+                className="inline-flex items-center gap-2 rounded-lg bg-[#FFB800] px-4 py-2.5 text-sm font-semibold text-black transition-colors hover:bg-[#E5A600]"
+              >
                 <Download className="h-4 w-4" />
                 Download Full Prospectus (PDF)
               </button>
 
-              {/* PROGRAM LEVEL TOGGLE */}
               <div className="inline-flex rounded-lg border bg-white p-1 shadow-sm">
                 <button
                   onClick={() => setProgramLevel("Undergraduate")}
@@ -89,23 +109,8 @@ export default function AcademicsPage() {
             </div>
           </div>
 
-          {loading && (
-            <div className="flex items-center justify-center py-12">
-              <div className="h-8 w-8 animate-spin rounded-full border-4 border-[#004494] border-t-transparent"></div>
-            </div>
-          )}
-
-          {error && (
-            <div className="rounded-lg border border-red-200 bg-red-50 p-4 text-sm text-red-800">
-              <p className="font-semibold">Error loading courses</p>
-              <p className="mt-1">{error}</p>
-              <p className="mt-2 text-xs">Make sure Supabase is configured and the courses table exists.</p>
-            </div>
-          )}
-
           {!loading && !error && (
             <>
-              {/* UNDERGRADUATE PROGRAM */}
               {programLevel === "Undergraduate" && (
                 <>
                   <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
@@ -128,34 +133,52 @@ export default function AcademicsPage() {
                   </div>
 
                   <div className="grid gap-6 lg:grid-cols-2">
-                    <SemesterCard title="First Semester" courses={groupedCourses.semester1} />
-                    <SemesterCard title="Second Semester" courses={groupedCourses.semester2} />
+                    <SemesterCard
+                      title="First Semester"
+                      courses={groupedCourses.semester1}
+                      onCourseClick={setSelectedCourse}
+                    />
+                    <SemesterCard
+                      title="Second Semester"
+                      courses={groupedCourses.semester2}
+                      onCourseClick={setSelectedCourse}
+                    />
                   </div>
                 </>
               )}
 
-              {/* GRADUATE PROGRAM */}
               {programLevel === "Graduate" && (
                 <div className="grid gap-6 lg:grid-cols-2">
-                  <SemesterCard title="Core Courses" courses={groupedCourses.semester1} />
-                  <SemesterCard title="Specialization & Thesis" courses={groupedCourses.semester2} />
+                  <SemesterCard
+                    title="Core Courses"
+                    courses={groupedCourses.semester1}
+                    onCourseClick={setSelectedCourse}
+                  />
+                  <SemesterCard
+                    title="Specialization & Thesis"
+                    courses={groupedCourses.semester2}
+                    onCourseClick={setSelectedCourse}
+                  />
                 </div>
               )}
             </>
           )}
         </div>
       </section>
+
+      <CourseDetailModal course={selectedCourse} onClose={() => setSelectedCourse(null)} />
     </main>
   )
 }
 
-/* SEMESTER CARD COMPONENT */
 function SemesterCard({
   title,
   courses,
+  onCourseClick,
 }: {
   title: string
-  courses: { course_code: string; title: string; units: number }[]
+  courses: Course[]
+  onCourseClick: (course: Course) => void
 }) {
   return (
     <div className="overflow-hidden rounded-lg border border-gray-200 bg-white shadow-sm">
@@ -164,13 +187,16 @@ function SemesterCard({
       </div>
 
       {courses.length === 0 ? (
-        <div className="px-6 py-8 text-center text-sm text-muted-foreground">No courses available</div>
+        <div className="px-6 py-8 text-center text-sm text-muted-foreground">
+          No courses available
+        </div>
       ) : (
         <ul className="divide-y divide-gray-100">
           {courses.map((course) => (
             <li
               key={course.course_code}
-              className="flex items-start justify-between gap-4 px-6 py-4 transition-colors hover:bg-gray-50"
+              onClick={() => onCourseClick(course)}
+              className="flex cursor-pointer items-start justify-between gap-4 px-6 py-4 transition-colors hover:bg-blue-50"
             >
               <div className="flex-1">
                 <p className="font-medium text-[#004494]">{course.course_code}</p>
