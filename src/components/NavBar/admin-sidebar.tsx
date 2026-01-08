@@ -50,11 +50,6 @@ const menuItems = [
     icon: Briefcase,
   },
   {
-    title: "Notable Alumni",
-    href: "/admin-alumni",
-    icon: GraduationCap,
-  },
-  {
     title: "Faculty",
     href: "/admin-faculty",
     icon: Users,
