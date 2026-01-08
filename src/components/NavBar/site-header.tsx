@@ -10,6 +10,7 @@ import {
   Sheet,
   SheetContent,
   SheetTrigger,
+  SheetTitle,
 } from "@/components/ui/sheet"
 
 const menuItems = [
@@ -77,7 +78,7 @@ export const SiteHeader = () => {
                                         className="w-[300px] sm:w-[400px] bg-[#24418f] text-white border-none [&>button]:hidden p-0 flex flex-col"
                                     >
                                         <div className="flex items-center justify-between p-6">
-                                            <h2 className="text-xl font-semibold">Menu</h2>
+                                            <SheetTitle className="text-xl font-semibold text-white">Menu</SheetTitle>
                                             <Button
                                                 variant="ghost"
                                                 size="icon"
