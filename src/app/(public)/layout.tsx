@@ -1,7 +1,7 @@
 "use client";
 
 import { SiteHeader } from "@/components/NavBar/site-header";
-import { MobileBottomNav } from "@/components/NavBar/mobile-bottom-nav";
+import { Footer } from "@/components/NavBar/footer";
 import { Home as HomeIcon, Info, LogIn, LayoutDashboard } from "lucide-react";
 import { useEffect, useState } from "react";
 import { usePathname, useRouter } from "next/navigation";
@@ -82,12 +82,17 @@ export default function PublicLayout({
   }
 
   // Only render children when not loading
+  const isLoginPage = pathname === "/login";
   return (
-    <div className="flex min-h-screen w-full">
+  <div className="flex min-h-screen w-full">
       <div className="flex-1 flex flex-col min-w-0">
-        <SiteHeader />
-        <main className="flex-1 pb-16 md:pb-4">{children}</main>
-        <MobileBottomNav />
+        {/* Hide Header on Login Page */}
+        {!isLoginPage && <SiteHeader />}
+        
+        <main className="flex-1">{children}</main>
+        
+        {/* Hide Bottom Nav on Login Page */}
+        {!isLoginPage && <Footer />}
       </div>
     </div>
   );
