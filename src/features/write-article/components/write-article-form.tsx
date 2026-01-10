@@ -85,7 +85,7 @@ export default function WriteArticleForm({articleFormData, articleId}: WriteArti
     };
 
     return (
-        <div className="mx-auto p-2 max-w-7xl">
+        <div className="p-2 mx-4 max-w-7xl mb-4">
             <form onSubmit={handleSubmit} className="space-y-6">
                 <div className="space-y-2">
                     <Label htmlFor="title" className="text-sm font-medium text-gray-700 dark:text-gray-300">

@@ -5,7 +5,7 @@ import WriteArticleForm from "./write-article-form";
 
 export default function WriteArticle() {
     return (
-        <div className="mx-auto p-8 max-w-7xl">
+        <div>
             <WriteArticleHeader isEdit={false}/>
             <WriteArticleForm articleFormData={
                 {
