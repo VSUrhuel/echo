@@ -156,7 +156,7 @@ export function LoginCard() {
       <div className="relative z-10 container mx-auto px-4 py-8 lg:py-0 min-h-screen flex items-center justify-center">
         <div className="w-full max-w-6xl grid lg:grid-cols-2 gap-8 lg:gap-14 items-center">
           {/* Left Side - Logo and Branding (Desktop) / Top (Mobile) */}
-          <div className="flex flex-col items-center justify-center space-y-6 order-1">
+          <div className="flex flex-col items-center justify-center order-1">
             {/* Logo */}
             <div className="relative">
               <div className="relative flex justify-center items-center">
@@ -170,16 +170,6 @@ export function LoginCard() {
                 />
               </div>
             </div>
-
-            {/* Branding Text - Hidden on mobile, shown on desktop */}
-            <div className="hidden lg:block text-center space-y-2">
-              <h3 className="text-2xl xl:text-3xl font-bold text-[#24418f] dark:text-blue-300">
-                BS Development
-              </h3>
-              <h3 className="text-2xl xl:text-3xl font-bold text-[#24418f] dark:text-blue-300">
-                Communication
-              </h3>
-            </div>
           </div>
 
           {/* Right Side - Login Form */}
@@ -190,7 +180,7 @@ export function LoginCard() {
                 Faculty Login
               </h1>
               <p className="text-gray-600 dark:text-gray-400 text-sm md:text-lg">
-                Enter your credentials to access your account
+                Enter your credentials to access the DevCom admin interface.
               </p>
             </div>
 
