@@ -72,10 +72,6 @@ export default function ArticleTable({articles, loading}: ArticleTableProps) {
 
     return (
         <main className="flex-1 p-6">
-            <div className="mb-6">
-                <h1 className="text-3xl font-bold tracking-tight text-foreground">Article Management</h1>
-                <p className="text-muted-foreground mt-2">Manage and organize all published and draft articles</p>
-            </div>
 
             {/* Stats Cards */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
