@@ -13,31 +13,27 @@ export const useArticleData = ({articleId, slug}: {articleId?: string | undefine
     const [totalPages, setTotalPages] = useState(0);
     const [paginatedArticles, setPaginatedArticles] = useState<Article[]>([]);
     
-    useEffect(() => {
-        const fetchArticles = async () => {
-            setLoading(true)
-
-            try 
-            {
-                const { data, error } = await supabase
+    const fetchArticles = async () => {
+        setLoading(true)
+        try {
+            const { data, error } = await supabase
                 .from('articles')
                 .select('*, author:profiles(*)')
                 .order('created_at', { ascending: false });
 
-                if (error) {
-                    throw error;
-                }
-
-                setArticles(data);
+            if (error) {
+                throw error;
             }
-            catch (error) {
-                console.error('Error fetching articles:', error);
-                toast.error('Error fetching articles');
-            }
-            finally {
-                setLoading(false);
-            }
+            setArticles(data);
+        } catch (error) {
+            console.error('Error fetching articles:', error);
+            toast.error('Error fetching articles');
+        } finally {
+            setLoading(false);
         }
+    }
+
+    useEffect(() => {
         fetchArticles();
     }, []);
 
@@ -170,6 +166,7 @@ export const useArticleData = ({articleId, slug}: {articleId?: string | undefine
         totalPages,
         prevPage,
         nextPage,
-        setPage
+        setPage,
+        refetch: fetchArticles
     }
 }

@@ -81,6 +81,7 @@ export default function WriteArticleForm({articleFormData, articleId}: WriteArti
         } finally {
             setIsSavingDraft(false);
         }
+        router.push('/admin-articles');
     };
 
     return (

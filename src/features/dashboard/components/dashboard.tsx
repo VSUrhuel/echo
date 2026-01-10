@@ -80,7 +80,7 @@ export default function Dashboard() {
                 </div>
 
                 {/* Recent Activity Section */}
-                <div className="grid grid-cols-1  gap-6">
+                <div className="grid grid-cols-1 gap-6">
                     <div className="lg:col-span-2">
                         {isLoading ? (
                             <Card className="border-border/50">
