@@ -7,9 +7,10 @@ import { LayoutDashboard, TrendingUp, Activity, Sparkles, Calendar, Briefcase, U
 import { Card, CardContent } from "@/components/ui/card"
 import { Skeleton } from "@/components/ui/skeleton"
 import { Button } from "@/components/ui/button"
-
+import { useRouter } from "next/navigation"
 export default function Dashboard() {
     const { articles, isLoading } = useDashboardData()
+    const router = useRouter()
     
     return (
         <div className="flex flex-col min-h-screen bg-background">
@@ -79,8 +80,7 @@ export default function Dashboard() {
                 </div>
 
                 {/* Recent Activity Section */}
-                <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                    {/* Recent Articles - Takes 2 columns */}
+                <div className="grid grid-cols-1  gap-6">
                     <div className="lg:col-span-2">
                         {isLoading ? (
                             <Card className="border-border/50">
@@ -99,61 +99,6 @@ export default function Dashboard() {
                         ) : (
                             <DashboardRecentArticles articles={articles}/>
                         )}
-                    </div>
-                    
-                    {/* Quick Actions Sidebar */}
-                    <div className="space-y-6">
-                        <Card className="border-border/50">
-                            <CardContent className="p-6">
-                                <h3 className="font-semibold text-foreground mb-4 flex items-center gap-2">
-                                    <Sparkles className="h-4 w-4 text-primary" />
-                                    Quick Actions
-                                </h3>
-                                <div className="space-y-2">
-                                    <Button variant="outline" className="w-full justify-start gap-2 hover:bg-primary/5 hover:text-primary transition-colors">
-                                        <FileText className="h-4 w-4" />
-                                        Create Article
-                                    </Button>
-                                    <Button variant="outline" className="w-full justify-start gap-2 hover:bg-secondary/5 hover:text-secondary transition-colors">
-                                        <Users className="h-4 w-4" />
-                                        Add Faculty
-                                    </Button>
-                                    <Button variant="outline" className="w-full justify-start gap-2 hover:bg-accent/5 hover:text-accent-foreground transition-colors">
-                                        <Briefcase className="h-4 w-4" />
-                                        Add OJT Partner
-                                    </Button>
-                                    <Button variant="outline" className="w-full justify-start gap-2 hover:bg-green-500/5 hover:text-green-600 transition-colors">
-                                        <TrendingUp className="h-4 w-4" />
-                                        View Analytics
-                                    </Button>
-                                </div>
-                            </CardContent>
-                        </Card>
-                        
-                        {/* Performance Summary */}
-                        <Card className="border-border/50">
-                            <CardContent className="p-6">
-                                <h3 className="font-semibold text-foreground mb-4">Performance Summary</h3>
-                                <div className="space-y-3">
-                                    <div className="flex items-center justify-between">
-                                        <span className="text-sm text-muted-foreground">Content Published</span>
-                                        <span className="font-medium text-foreground">24 articles</span>
-                                    </div>
-                                    <div className="flex items-center justify-between">
-                                        <span className="text-sm text-muted-foreground">Avg. Read Time</span>
-                                        <span className="font-medium text-foreground">4.2 min</span>
-                                    </div>
-                                    <div className="flex items-center justify-between">
-                                        <span className="text-sm text-muted-foreground">Engagement Rate</span>
-                                        <span className="font-medium text-green-600">↑ 18%</span>
-                                    </div>
-                                    <div className="flex items-center justify-between">
-                                        <span className="text-sm text-muted-foreground">Completion Rate</span>
-                                        <span className="font-medium text-green-600">94%</span>
-                                    </div>
-                                </div>
-                            </CardContent>
-                        </Card>
                     </div>
                 </div>
             </main>
