@@ -6,9 +6,10 @@ import OjtStatCards from "./ojt-stat-cards";
 import OjtFilters from "./ojt-filters";
 import OjtTable from "./ojt-table";
 import { Partner } from "@/types";
+import { DataTablePagination } from "@/components/ui/data-table-pagination";
 
 export default function OjtPage() {
-    const { isAddDialogOpen, setIsAddDialogOpen, editingLinkage,setEditingLinkage ,formData, setFormData, resetForm, searchQuery, setSearchQuery, filterType, setFilterType, isLoading, nextPage, prevPage, paginatedLinkages, filteredLinkages } = useOjtData()
+    const { isAddDialogOpen, setIsAddDialogOpen, editingLinkage,setEditingLinkage ,formData, setFormData, resetForm, searchQuery, setSearchQuery, filterType, setFilterType, isLoading, nextPage, prevPage, paginatedLinkages, filteredLinkages, hasPreviousPage, hasNextPage, currentPage, setCurrentPage } = useOjtData()
     const { onSubmit, deletePartner, isSaving, isUploading, handleLogoUpload } = useOjtAction()
 
     const handleSubmit = async () => {
@@ -48,7 +49,15 @@ export default function OjtPage() {
                     }} 
                     handleDelete={(id: number) => deletePartner(id)} 
                 />
-                
+                <DataTablePagination 
+                    currentPage={currentPage}
+                    totalPages={Math.ceil((filteredLinkages?.length || 0) / 10)}
+                    onPageChange={(page) => {
+                        setCurrentPage(page)
+                    }}
+                    isLoading={isLoading}
+                />
+
             </main>
         </div>
     )

@@ -168,6 +168,7 @@ export const useArticleData = ({articleId, slug}: {articleId?: string | undefine
         page,
         totalPages,
         prevPage,
-        nextPage
+        nextPage,
+        setPage
     }
 }
