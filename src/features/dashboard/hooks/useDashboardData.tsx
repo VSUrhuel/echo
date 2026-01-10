@@ -16,7 +16,7 @@ export default function useDashboardData() {
                 if (error) {
                     console.error('Error fetching articles:', error)
                 } else {
-                    setArticles(data.splice(0, 5))
+                    setArticles(data)
                 }
             } catch (error) {
                 console.error('Error fetching articles:', error)

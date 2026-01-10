@@ -8,6 +8,7 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import formatDate from "../utils/format-date";
 import ArticleLoading from "./article-loading";
+import calculateReadTime from "../utils/caculate-read-time";
 
 export default function ArticleViewData({ articleId, slug }: { articleId?: string, slug?: string }) {
   const router = useRouter();
@@ -41,13 +42,6 @@ export default function ArticleViewData({ articleId, slug }: { articleId?: strin
     );
   }
 
-  // Calculate read time if not provided
-  const calculateReadTime = (content: string) => {
-    const wordsPerMinute = 200;
-    const words = content.split(/\s+/).length;
-    const minutes = Math.ceil(words / wordsPerMinute);
-    return minutes.toString();
-  };
 
   const readTime = calculateReadTime(article.content || "");
   const recentArticles = articles
