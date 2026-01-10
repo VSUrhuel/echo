@@ -1,11 +1,12 @@
 import WriteArticleForm from "@/features/write-article/components/write-article-form";
 import WriteArticleHeader from "@/features/write-article/components/write-artilce-header";
 import { useArticleData } from "@/features/article/hooks/useArticleData";
+import ArticleLoading from "./article-loading";
 
 export default function EditArticleData({articleId}: {articleId: string}) {
     const { selectedArticle } = useArticleData({articleId});
     if (!selectedArticle) {
-       return <div>Loading...</div>
+       return <ArticleLoading />
     }
 
     return (

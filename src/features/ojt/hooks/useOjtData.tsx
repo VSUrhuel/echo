@@ -86,7 +86,12 @@ export default function useOjtData() {
                 if (filterType === 'all' && linkage.name.toLowerCase().includes(searchQuery.toLowerCase())) {
                     return true
                 }
-                return linkage.type === filterType
+                if(filterType == 'active') {
+                    return linkage.is_active
+                }
+                if(filterType == 'inactive') {
+                    return !linkage.is_active
+                }
             })
             setFilteredLinkages(filteredData)
             setCurrentPage(1)
