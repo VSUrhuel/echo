@@ -99,7 +99,7 @@ export default function ArticleTable({articles, loading, onDeleteSuccess}: Artic
                                 <p className="text-sm font-medium text-muted-foreground">Draft Articles</p>
                                 <p className="text-3xl font-bold text-secondary mt-2">{stats.drafts}</p>
                             </div>
-                            <div className="p-3 rounded-full bg-secondary/20">
+                            <div className="p-3 rounded-full bg-secondary/20 ">
                                 <EyeOff className="h-6 w-6 text-secondary" />
                             </div>
                         </div>
@@ -312,7 +312,7 @@ export default function ArticleTable({articles, loading, onDeleteSuccess}: Artic
                                                         <Button
                                                             variant="ghost"
                                                             size="icon"
-                                                            className="h-8 w-8 text-muted-foreground hover:text-primary"
+                                                            className="h-8 w-8 text-muted-foreground hover:text-primary/80 hover:bg-primary/5 rounded-lg transition-colors flex items-center justify-center gap-2 border border-border hover:border-primary/30"
                                                             onClick={() => router.push(`/admin-articles/view/${article.id}`)}
                                                         >
                                                             <Eye className="h-4 w-4" />
@@ -322,7 +322,7 @@ export default function ArticleTable({articles, loading, onDeleteSuccess}: Artic
                                                             <Button
                                                                 variant="ghost"
                                                                 size="icon"
-                                                                className="h-8 w-8 text-muted-foreground hover:text-blue-600"
+                                                                className="h-8 w-8 text-muted-foreground hover:text-primary/80 hover:bg-primary/5 rounded-lg transition-colors flex items-center justify-center gap-2 border border-border hover:border-primary/30"
                                                                 onClick={() => router.push(`/admin-articles/edit/${article.id}`)}
                                                             >
                                                                 <Edit className="h-4 w-4" />
@@ -334,7 +334,7 @@ export default function ArticleTable({articles, loading, onDeleteSuccess}: Artic
                                                                 <Button 
                                                                     variant="ghost" 
                                                                     size="icon" 
-                                                                    className="h-8 w-8 text-muted-foreground hover:text-destructive"
+                                                                    className="h-8 w-8 text-muted-foreground hover:text-primary/80 hover:bg-primary/5 rounded-lg transition-colors flex items-center justify-center gap-2 border border-border hover:border-primary/30"
                                                                 >
                                                                     <MoreHorizontal className="h-4 w-4" />
                                                                 </Button>

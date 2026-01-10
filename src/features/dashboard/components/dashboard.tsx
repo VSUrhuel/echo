@@ -29,7 +29,7 @@ export default function Dashboard() {
                     <Button
                         variant="outline"
                         size="sm"
-                        className="hidden sm:flex gap-2 border-border hover:border-primary/50 hover:text-primary transition-colors"
+                        className="hidden sm:flex gap-2 border-border hover:text-primary/80 hover:bg-primary/5 rounded-lg transition-colors flex items-center justify-center gap-2 border border-border hover:border-primary/30"
                     >
                         <Calendar className="h-3.5 w-3.5" />
                         {new Date().toLocaleDateString(
@@ -61,12 +61,12 @@ export default function Dashboard() {
                     {isLoading ? (
                         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
                             {[...Array(4)].map((_, i) => (
-                                <Card key={i} className="border-border/50">
+                                <Card key={i} className="border-border/50 hover:border-primary/50 hover:text-primary transition-colors">
                                     <CardContent className="p-6">
                                         <div className="space-y-3">
-                                            <Skeleton className="h-4 w-1/2" />
-                                            <Skeleton className="h-8 w-3/4" />
-                                            <Skeleton className="h-3 w-full" />
+                                            <Skeleton className="h-4 w-1/2 bg-gray-200" />
+                                            <Skeleton className="h-8 w-3/4 bg-gray-200" />
+                                            <Skeleton className="h-3 w-full bg-gray-200" />
                                         </div>
                                     </CardContent>
                                 </Card>
@@ -86,11 +86,11 @@ export default function Dashboard() {
                             <Card className="border-border/50">
                                 <CardContent className="p-6">
                                     <div className="space-y-4">
-                                        <Skeleton className="h-6 w-1/4" />
+                                        <Skeleton className="h-6 w-1/4 bg-gray-200" />
                                         {[...Array(3)].map((_, i) => (
                                             <div key={i} className="space-y-2">
-                                                <Skeleton className="h-4 w-full" />
-                                                <Skeleton className="h-3 w-2/3" />
+                                                <Skeleton className="h-4 w-full bg-gray-200" />
+                                                <Skeleton className="h-3 w-2/3 bg-gray-200" />
                                             </div>
                                         ))}
                                     </div>

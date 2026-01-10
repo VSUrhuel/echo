@@ -84,9 +84,9 @@ export default function ArticleViewData({ articleId, slug }: { articleId?: strin
         </div>
       </header>
 
-      <main className="container mx-auto px-4 py-8 z-0">
+      <main className="container mx-auto px-8 py-8 z-0">
         <div className="max-w-7xl mx-auto">
-          <div className="flex flex-col lg:flex-row gap-8 lg:gap-12">
+          <div className="flex flex-col lg:flex-row gap-4 lg:gap-12">
             {/* Main Content */}
             <article className="lg:w-4/5">
             <ArticleViewHeader
