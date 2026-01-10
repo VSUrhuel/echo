@@ -16,7 +16,7 @@ import {
 const menuItems = [
   { name: 'Home', href: '/' },
   { name: 'Academics', href: '/academics' },
-  { name: 'Faculty', href: '#link' },
+  { name: 'Faculty', href: '/public-faculty' },
   { name: 'News & Updates', href: '#link' },
   { name: 'Resources', href: '#link' },
   { name: 'Contact Us', href: '#link' },

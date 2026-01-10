@@ -1,10 +1,14 @@
 "use client"
 
+import { useState } from "react"
 import { Mail } from "lucide-react"
 import { useFaculty } from "@/features/faculty-view/hooks/use-faculty"
+import { FacultyDetailModal } from "@/features/faculty-view/components/faculty-detail-modal"
+import type { Profile } from "@/features/faculty-view/types/profiles"
 
 export default function FacultyPage() {
   const { faculty, loading, error, getImageUrl } = useFaculty()
+  const [selectedMember, setSelectedMember] = useState<Profile | null>(null)
 
   return (
     <main className="w-full">
@@ -59,7 +63,12 @@ export default function FacultyPage() {
           {!loading && !error && faculty.length > 0 && (
             <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
               {faculty.map((member) => (
-                <FacultyCard key={member.id} member={member} imageUrl={getImageUrl(member.image_url)} />
+                <FacultyCard
+                  key={member.id}
+                  member={member}
+                  imageUrl={getImageUrl(member.image_url)}
+                  onCardClick={() => setSelectedMember(member)}
+                />
               ))}
             </div>
           )}
@@ -83,14 +92,34 @@ export default function FacultyPage() {
           </a>
         </div>
       </section>
+
+      {selectedMember && (
+        <FacultyDetailModal
+          member={selectedMember}
+          imageUrl={getImageUrl(selectedMember.image_url)}
+          isOpen={!!selectedMember}
+          onClose={() => setSelectedMember(null)}
+        />
+      )}
     </main>
   )
 }
 
 /* FACULTY CARD COMPONENT */
-function FacultyCard({ member, imageUrl }: { member: any; imageUrl: string }) {
+function FacultyCard({
+  member,
+  imageUrl,
+  onCardClick,
+}: {
+  member: Profile
+  imageUrl: string
+  onCardClick: () => void
+}) {
   return (
-    <div className="overflow-hidden rounded-lg border border-gray-200 bg-white shadow-sm transition-shadow hover:shadow-md">
+    <button
+      onClick={onCardClick}
+      className="overflow-hidden rounded-lg border border-gray-200 bg-white shadow-sm transition-shadow hover:shadow-md cursor-pointer text-left"
+    >
       {/* IMAGE */}
       <div className="aspect-square overflow-hidden bg-gray-100">
         <img
@@ -112,12 +141,13 @@ function FacultyCard({ member, imageUrl }: { member: any; imageUrl: string }) {
 
         <a
           href={`mailto:${member.email}`}
+          onClick={(e) => e.stopPropagation()}
           className="mt-3 flex items-center gap-2 text-xs text-gray-500 hover:text-[#004494] transition-colors"
         >
           <Mail className="h-3 w-3" />
           {member.email}
         </a>
       </div>
-    </div>
+    </button>
   )
 }
