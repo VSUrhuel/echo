@@ -3,201 +3,314 @@
 import ReadOnlyEditor from "@/components/tiptap-templates/simple/read-only-editor";
 import { useArticleData } from "../hooks/useArticleData";
 import ArticleViewHeader from "./article-view-header";
-import { ArrowLeft, Share2, Bookmark, CalendarDays, Building, Mail, Phone, Globe } from "lucide-react";
+import { ArrowLeft, Share2, Bookmark, CalendarDays, Building, Mail, ExternalLink, ChevronRight, Tag, BookOpen, Users, FileText } from "lucide-react";
 import { useRouter } from "next/navigation";
-import Image from "next/image";
+import { useState } from "react";
 import formatDate from "../utils/format-date";
+import ArticleLoading from "./article-loading";
 
 export default function ArticleViewData({ articleId, slug }: { articleId?: string, slug?: string }) {
   const router = useRouter();
-  const { articles, article } = useArticleData({ articleId, slug });
+  const { articles, article, loading } = useArticleData({ articleId, slug });
+  const [copied, setCopied] = useState(false);
 
-  if (!article) {
+  const handleShare = async () => {
+    if (navigator.share) {
+      // replace url
+      const url = window.location.href.replace(`/admin-articles/view/${article?.id}`, `/articles/${article?.slug}`);
+      try {
+        await navigator.share({
+          title: article?.title,
+          text: article?.excerpt || "Check out this article",
+          url: url,
+        });
+      } catch (err) {
+        console.log('Error sharing:', err);
+      }
+    } else {
+      await navigator.clipboard.writeText(window.location.href.replace(`/admin-articles/view/${article?.id}`, `/articles/${article?.slug}`));
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    }
+  };
+
+  // Loading skeleton that matches the header design
+  if (loading || !article) {
     return (
-      <div className="flex items-center justify-center">
-        <div className="animate-pulse space-y-4">
-          <div className="h-8 bg-gray-200 dark:bg-gray-800 rounded w-64"></div>
-          <div className="h-4 bg-gray-200 dark:bg-gray-800 rounded w-48"></div>
-        </div>
-      </div>
+      <ArticleLoading />
     );
   }
 
+  // Calculate read time if not provided
+  const calculateReadTime = (content: string) => {
+    const wordsPerMinute = 200;
+    const words = content.split(/\s+/).length;
+    const minutes = Math.ceil(words / wordsPerMinute);
+    return minutes.toString();
+  };
+
+  const readTime = calculateReadTime(article.content || "");
+  const recentArticles = articles
+    .filter(a => a.published_at !== null && a.id !== article.id)
+    .slice(0, 4);
+
   return (
-    <div className="bg-gray-50 dark:bg-gray-900 w-full">
-      {/* Back Navigation */}
-      <div className="sticky top-0 z-10 bg-white/80 dark:bg-gray-900/80 backdrop-blur-sm border-b border-gray-200 dark:border-gray-800">
-        <div className="container mx-auto px-4 py-3">
-          <div className="flex items-center justify-start">
+    <div className="bg-background min-h-screen">
+      <header className="sticky top-0 z-5 bg-white/90 dark:bg-gray-900/90 backdrop-blur-md border-b border-border">
+        <div className="container mx-auto px-4">
+          <div className="flex items-center justify-between py-4">
             <button
               onClick={() => router.back()}
-              className="flex items-center gap-2 text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors group"
+              className="flex items-center gap-2 text-gray-600 dark:text-gray-300 hover:text-primary transition-colors group"
+              aria-label="Go back to articles"
             >
-              <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
-              <span className="font-medium">Back to Articles</span>
+              <div className="p-2 rounded-lg bg-gray-100 dark:bg-gray-800 group-hover:bg-primary/10 transition-colors">
+                <ArrowLeft className="w-4 h-4 group-hover:-translate-x-0.5 transition-transform" />
+              </div>
+              <span className="font-medium hidden sm:inline">Go Back</span>
             </button>
+
+            <div className="flex items-center gap-2">
+              {article.published_at && (
+              <button
+                onClick={handleShare}
+                className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors group relative"
+                aria-label="Share article"
+              >
+                <Share2 className="w-5 h-5 text-gray-500 group-hover:text-primary transition-colors" />
+                {copied && (
+                  <span className="absolute -top-8 left-1/2 -translate-x-1/2 bg-primary text-white text-xs px-2 py-1 rounded whitespace-nowrap">
+                    Link copied!
+                  </span>
+                )}
+              </button>
+              )}
+            </div>
           </div>
         </div>
-      </div>
+      </header>
 
-      <main className="container mx-auto px-4 py-8 w-full">
-        <div className="max-w-6xl mx-auto w-full">
+      <main className="container mx-auto px-4 py-8 z-0">
+        <div className="max-w-7xl mx-auto">
           <div className="flex flex-col lg:flex-row gap-8 lg:gap-12">
-            <div className="lg:w-3/4">
-              <ArticleViewHeader
-                title={article.title}
-                author={article.author!}
-                publishDate={article.published_at!}
-                coverImage={article.cover_image_url!}
-                category={article.category!}
-                isDraft={article.published_at === null}
-              />
-
-              <div className="prose prose-lg dark:prose-invert max-w-none">
-                {/* Stats Bar */}
-                <div className="flex items-center justify-between py-4 mb-8 border-y border-gray-200 dark:border-gray-800">
-                  <div className="flex items-center gap-6 text-sm text-gray-600 dark:text-gray-400">
-                    <span className="flex items-center gap-2">
-                      <span className="font-medium text-gray-900 dark:text-white">{article.views_count || 0}</span>
-                      Views
+            {/* Main Content */}
+            <article className="lg:w-4/5">
+            <ArticleViewHeader
+            title={article.title}
+            author={article.author!}
+            publishDate={article.published_at!}
+            coverImage={article.cover_image_url!}
+            category={article.category!}
+            readTime={readTime}
+            isDraft={article.published_at === null}
+            viewsCount={article.views_count || 0}
+          />
+              {/* Content Stats - Simplified */}
+              <div className="flex flex-wrap items-center justify-between gap-4 py-6 mb-8 border-y border-border bg-card rounded-xl px-6">
+                <div className="flex items-center gap-6">
+                  <div className="flex items-center gap-2 text-gray-600 dark:text-gray-400">
+                    <FileText className="w-4 h-4" />
+                    <span className="text-sm">
+                      {article.content?.split(' ').length || 0} words
+                    </span>
+                  </div>
+                  <div className="w-px h-4 bg-border"></div>
+                  <div className="flex items-center gap-2 text-gray-600 dark:text-gray-400">
+                    <Tag className="w-4 h-4" />
+                    <span className="text-sm">
+                      {article.tags?.length || 0} tags
                     </span>
                   </div>
                 </div>
+                
+                <button
+                  onClick={() => window.print()}
+                  className="text-sm text-primary hover:text-primary/80 font-medium"
+                >
+                  Print Article
+                </button>
+              </div>
 
-                <div className="py-4">
-                  <ReadOnlyEditor content={article.content!} />
+              {/* Article Content */}
+              <div className="bg-card rounded-2xl border border-border p-8 shadow-sm mb-8">
+                <div className="prose prose-lg dark:prose-invert max-w-none">
+                  <div className="leading-relaxed text-gray-700 dark:text-gray-300">
+                    <ReadOnlyEditor content={article.content!} />
+                  </div>
                 </div>
 
+                {/* Tags - Now interactive */}
                 {article.tags && article.tags.length > 0 && (
-                  <div className="mt-12 pt-8 border-t border-gray-200 dark:border-gray-800">
-                    <h3 className="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-4">Tags</h3>
+                  <div className="mt-12 pt-8 border-t border-border">
+                    <div className="flex items-center gap-2 mb-4">
+                      <Tag className="w-5 h-5 text-primary" />
+                      <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Explore More Topics</h3>
+                    </div>
                     <div className="flex flex-wrap gap-2">
                       {article.tags.map((tag, index) => (
-                        <span
+                        <a
                           key={index}
-                          className="px-3 py-1 bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 rounded-full text-sm hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors cursor-pointer"
+                          className="px-4 py-2 bg-primary/10 hover:bg-primary/20 text-primary dark:text-primary-foreground rounded-full text-sm font-medium transition-colors hover:scale-105 active:scale-95 group flex items-center gap-2"
                         >
-                          {tag}
-                        </span>
+                          #{tag}
+                          {/* <ChevronRight className="w-3 h-3 opacity-0 group-hover:opacity-100 transition-opacity" /> */}
+                        </a>
                       ))}
                     </div>
                   </div>
                 )}
               </div>
-            </div>
 
-            <div className="lg:w-1/4 lg:pt-0">
-              <div className="space-y-6">
-                <div className="bg-white dark:bg-gray-800 rounded-xl p-6 border border-gray-200 dark:border-gray-700 shadow-sm">
-                  <div className="flex flex-col items-center text-center">
-                    <div className="w-24 h-24 rounded-full bg-gradient-to-br from-primary-100 to-primary-300 dark:from-primary-900 dark:to-primary-700 flex items-center justify-center mb-4">
-                      {article.author?.image_url ? (
-                        <div className="relative w-full h-full rounded-full overflow-hidden">
-                          <img
-                            src={article.author.image_url    }
-                            alt={`${article.author.first_name} ${article.author.last_name}`}
-                            className="object-cover"
-                            sizes="96px"
-                          />
-                        </div>
-                      ) : (
-                        <span className="text-3xl font-bold text-primary-600 dark:text-primary-400">
-                          {article.author?.first_name?.[0]}{article.author?.last_name?.[0]}
-                        </span>
-                      )}
-                    </div>
-                    
-                    <h3 className="text-xl font-semibold text-gray-900 dark:text-white">
-                      {article.author?.first_name} {article.author?.last_name}
-                    </h3>
-                    {article.author?.designation && (
-                      <p className="text-primary-600 dark:text-primary-400 font-medium mt-1">
-                        {article.author.designation}
+              {/* Share Call to Action */}
+              {article.published_at && (
+                <div className="bg-gradient-to-r from-primary to-secondary rounded-2xl p-8 text-white mb-8">
+                  <div className="flex flex-col md:flex-row items-center justify-between gap-6">
+                    <div>
+                      <h3 className="text-xl font-bold mb-2">Found this article helpful?</h3>
+                      <p className="text-primary-foreground/90">
+                        Share this knowledge with others in your network
                       </p>
-                    )}
-                    
-                    {(article.author?.consultation_hours || article.author?.consultation_hours) && (
-                      <div className="flex items-center justify-center gap-2 mt-2 text-gray-600 dark:text-gray-400">
-                        <Building className="w-4 h-4" />
-                        <span className="text-sm">
-                          {article.author?.consultation_hours}
-                        </span>
-                      </div>
-                    )}
-
-                    {article.author?.bio && (
-                      <p className="text-gray-700 dark:text-gray-300 mt-4 text-sm text-left">
-                        {article.author.bio}
-                      </p>
-                    )}
-
-                    <div className="mt-6 w-full space-y-3">
-                      {article.author?.email && (
-                        <div className="flex items-center gap-3 text-gray-600 dark:text-gray-400 hover:text-primary-600 dark:hover:text-primary-400 transition-colors">
-                          <Mail className="w-4 h-4 flex-shrink-0" />
-                          <span className="text-sm truncate">{article.author.email}</span>
-                        </div>
-                      )}
                     </div>
-
-                    {article.author?.specialization && (
-                      <div className="flex items-center justify-center gap-2 mt-4 pt-4 border-t border-gray-200 dark:border-gray-700 text-gray-500 dark:text-gray-500 text-sm">
-                        <CalendarDays className="w-4 h-4" />
-                        <span>Specializing in {article.author.specialization}</span>
-                      </div>
-                    )}
+                    <button
+                      onClick={handleShare}
+                      className="px-6 py-3 bg-white text-primary font-semibold rounded-lg hover:bg-gray-100 transition-colors flex items-center gap-2 whitespace-nowrap shadow-lg hover:shadow-xl"
+                    >
+                      <Share2 className="w-4 h-4" />
+                      Share This Article
+                    </button>
                   </div>
                 </div>
+              )}
+            </article>
 
-                <div className="bg-white dark:bg-gray-800 rounded-xl p-6 border border-gray-200 dark:border-gray-700 shadow-sm">
-                  <h3 className="font-semibold text-gray-900 dark:text-white mb-4">Recent Articles</h3>
-                  <div className="space-y-4">
-                    {articles.filter((article) => article.published_at !== null).slice(0, 5).map((item, index) => (
-                      <div 
-                        key={index}
-                        onClick={() => router.push(`/articles/${item.slug}`)} 
-                        className="group cursor-pointer pb-4 border-b border-gray-100 dark:border-gray-700 last:border-b-0 last:pb-0"
-                      >
-                        <h4 className="text-sm font-medium text-gray-900 dark:text-white group-hover:text-primary-600 dark:group-hover:text-primary-400 transition-colors line-clamp-2">
-                          {item.title}
-                        </h4>
-                        <div className="flex items-center justify-between mt-2">
-                          <p className="text-xs text-gray-500 dark:text-gray-500">
-                            {item.author?.first_name} {item.author?.last_name}
-                          </p>
-                          <div className="flex items-center gap-2 text-xs text-gray-500 dark:text-gray-500">
-                            <CalendarDays className="w-3 h-3" />
-                            <span>{item.published_at ? formatDate(item.published_at) : 'Not Published Yet'}</span>
-                          </div>
-                        </div>
-                      </div>
-                    ))}
+            {/* Sidebar - Author info removed, focusing on related content */}
+            <aside className="lg:w-1/3 space-y-8">
+              {/* Related Articles */}
+              {recentArticles.length > 0 && (
+                <div className="bg-card rounded-2xl border border-border p-6 shadow-sm">
+                  <div className="flex items-center justify-between mb-6">
+                    <h3 className="font-bold text-lg text-gray-900 dark:text-white flex items-center gap-2">
+                      <BookOpen className="w-5 h-5 text-primary" />
+                      Related Articles
+                    </h3>
+                    <div className="w-2 h-2 rounded-full bg-primary"></div>
                   </div>
                   
-                  <button onClick={() => router.push(`/articles/${article.slug}`)} className="w-full mt-6 py-2 text-sm font-medium text-primary-600 dark:text-primary-400 hover:text-primary-700 dark:hover:text-primary-300 hover:bg-primary-50 dark:hover:bg-primary-900/20 rounded-lg transition-colors">
-                    View All Articles →
+                  <div className="space-y-4">
+                    {recentArticles.map((item) => (
+                      <article 
+                        key={item.id}
+                        onClick={() => router.push(`/articles/${item.slug}`)}
+                        className="group cursor-pointer p-4 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors border border-transparent hover:border-border"
+                      >
+                        <div className="flex items-start gap-3">
+                          {item.cover_image_url && (
+                            <div className="w-16 h-16 rounded-lg overflow-hidden flex-shrink-0 bg-gradient-to-br from-primary/10 to-secondary/10">
+                              <img
+                                src={item.cover_image_url}
+                                alt={item.title}
+                                className="w-full h-full object-cover group-hover:scale-105 transition-transform"
+                              />
+                            </div>
+                          )}
+                          <div className="flex-1 min-w-0">
+                            <h4 className="font-medium text-gray-900 dark:text-white group-hover:text-primary transition-colors line-clamp-2 text-sm leading-snug">
+                              {item.title}
+                            </h4>
+                            <div className="flex items-center gap-2 mt-2">
+                              <span className="text-xs text-gray-500 dark:text-gray-500">
+                                {item.author?.first_name?.charAt(0)}{item.author?.last_name?.charAt(0)}
+                              </span>
+                              <span className="text-xs text-gray-500 dark:text-gray-500">•</span>
+                              <span className="text-xs text-gray-500 dark:text-gray-500">
+                                {item.published_at ? formatDate(item.published_at) : 'Draft'}
+                              </span>
+                            </div>
+                          </div>
+                          <ChevronRight className="w-4 h-4 text-gray-400 group-hover:text-primary transition-colors flex-shrink-0" />
+                        </div>
+                      </article>
+                    ))}
+                  </div>
+
+                  <button
+                    onClick={() => router.push('/articles')}
+                    className="w-full mt-6 py-3 text-sm font-medium text-primary hover:text-primary/80 hover:bg-primary/5 rounded-lg transition-colors flex items-center justify-center gap-2 border border-border hover:border-primary/30"
+                  >
+                    Browse All Articles
+                    <ExternalLink className="w-4 h-4" />
                   </button>
                 </div>
+              )}
 
-                <div className="bg-white dark:bg-gray-800 rounded-xl p-6 border border-gray-200 dark:border-gray-700 shadow-sm">
-                  <h3 className="font-semibold text-gray-900 dark:text-white mb-4">Quick Links</h3>
-                  <div className="space-y-3">
-                    <button onClick={() => router.push('/faculties')} className="w-full text-left px-3 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 hover:text-primary-600 dark:hover:text-primary-400 rounded-lg transition-colors">
-                      Faculty Directory
-                    </button>
-                    <button onClick={() => router.push('/news-and-updates')} className="w-full text-left px-3 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 hover:text-primary-600 dark:hover:text-primary-400 rounded-lg transition-colors">
-                      News and Updates
-                    </button>
-                    <button onClick={() => router.push('/academics')} className="w-full text-left px-3 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 hover:text-primary-600 dark:hover:text-primary-400 rounded-lg transition-colors">
-                      Courses
-                    </button>
-                    <button onClick={() => router.push('/resources')} className="w-full text-left px-3 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 hover:text-primary-600 dark:hover:text-primary-400 rounded-lg transition-colors">
-                      Download Resources
-                    </button>
+              {/* Article Details - Replaces author card */}
+              <div className="bg-card rounded-2xl border border-border p-6 shadow-sm">
+                <h3 className="font-bold text-lg text-gray-900 dark:text-white mb-6 flex items-center gap-2">
+                  <FileText className="w-5 h-5 text-secondary" />
+                  Article Details
+                </h3>
+                
+                <div className="space-y-4">
+                  <div className="flex items-center justify-between py-2">
+                    <span className="text-gray-600 dark:text-gray-400">Status</span>
+                    <span className={`font-medium ${article.published_at ? 'text-green-600 dark:text-green-400' : 'text-accent'}`}>
+                      {article.published_at ? 'Published' : 'Draft'}
+                    </span>
+                  </div>
+                  
+                  <div className="flex items-center justify-between py-2">
+                    <span className="text-gray-600 dark:text-gray-400">Created</span>
+                    <span className="font-medium text-gray-900 dark:text-white">
+                      {formatDate(article.created_at || article.published_at!)}
+                    </span>
+                  </div>
+                  
+                  <div className="flex items-center justify-between py-2">
+                    <span className="text-gray-600 dark:text-gray-400">Last Updated</span>
+                    <span className="font-medium text-gray-900 dark:text-white">
+                      {formatDate(article.updated_at || article.published_at!)}
+                    </span>
+                  </div>
+                  
+                  <div className="flex items-center justify-between py-2">
+                    <span className="text-gray-600 dark:text-gray-400">Category</span>
+                    <span className="font-medium text-primary">{article.category || 'Uncategorized'}</span>
                   </div>
                 </div>
               </div>
-            </div>
+
+              {/* Quick Resources */}
+              <div className="bg-card rounded-2xl border border-border p-6 shadow-sm">
+                <h3 className="font-bold text-lg text-gray-900 dark:text-white mb-6 flex items-center gap-2">
+                  <Users className="w-5 h-5 text-accent" />
+                  Quick Resources
+                </h3>
+                
+                <nav className="space-y-2">
+                  {[
+                    { label: 'Academic Resources', href: '/resources/academic', icon: '📚' },
+                    { label: 'Research Database', href: '/research', icon: '🔬' },
+                    { label: 'Faculty Publications', href: '/publications', icon: '📄' },
+                    { label: 'Student Portal', href: '/student', icon: '🎓' },
+                    { label: 'Campus Events', href: '/events', icon: '📅' },
+                  ].map((link) => (
+                    <a
+                      key={link.href}
+                      href={link.href}
+                      className="flex items-center justify-between p-3 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800/50 group transition-colors border border-transparent hover:border-border"
+                    >
+                      <div className="flex items-center gap-3">
+                        <span className="text-lg">{link.icon}</span>
+                        <span className="text-gray-700 dark:text-gray-300 group-hover:text-primary transition-colors">
+                          {link.label}
+                        </span>
+                      </div>
+                      <ChevronRight className="w-4 h-4 text-gray-400 group-hover:text-primary transition-colors" />
+                    </a>
+                  ))}
+                </nav>
+              </div>
+            </aside>
           </div>
         </div>
       </main>

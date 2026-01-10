@@ -97,6 +97,7 @@ export const useArticleData = ({articleId, slug}: {articleId?: string | undefine
                     author: data.author,
                     created_at: data.created_at,
                     published_at: data.published_at,
+                    views_count: data.views_count,
                 } as Article
 
                 setSelectedArticle(articleFormData);
