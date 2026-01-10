@@ -88,7 +88,7 @@ export function AdminSidebar() {
                   <SidebarMenuButton asChild isActive={pathname === item.href}>
                     <Link href={item.href}>
                       <item.icon className="h-4 w-4" />
-                      <span>{item.title}</span>
+                      <span className="font-small text-xs">{item.title}</span>
                     </Link>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
