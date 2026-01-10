@@ -11,7 +11,7 @@ import formatDate from "../utils/format-date";
 export default function ArticleViewData({ articleId, slug }: { articleId?: string, slug?: string }) {
   const router = useRouter();
   const { articles, article } = useArticleData({ articleId, slug });
-  console.log(article)
+
   if (!article) {
     return (
       <div className="flex items-center justify-center">

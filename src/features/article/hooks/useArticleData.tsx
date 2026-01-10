@@ -16,7 +16,7 @@ export const useArticleData = ({articleId, slug}: {articleId?: string | undefine
     useEffect(() => {
         const fetchArticles = async () => {
             setLoading(true)
-            console.log("here here")
+
             try 
             {
                 const { data, error } = await supabase
@@ -101,6 +101,33 @@ export const useArticleData = ({articleId, slug}: {articleId?: string | undefine
 
                 setSelectedArticle(articleFormData);
                 setArticle(article);
+
+                // Track View
+                const trackView = async () => {
+                    try {
+                        const { data: { user } } = await supabase.auth.getUser();
+                        
+                        // Simple fingerprint for IP hash placeholder
+                        const fingerprint = `${navigator.userAgent}-${navigator.language}-${screen.width}x${screen.height}`;
+                        const hash = btoa(fingerprint).substring(0, 32);
+
+                        const {data: viewData, error: viewError} = await supabase.rpc('track_article_view', {
+                            p_article_id: data.id,
+                            p_viewer_id: user?.id || null,
+                            p_ip_hash: hash
+                        });
+
+                        if(viewError)
+                        {
+                            console.error('Error tracking view:', viewError);
+                        }
+
+                    } catch (trackError) {
+                        console.error('Error tracking view:', trackError);
+                    }
+                };
+                
+                trackView();
             } catch (error) {
                 console.error('Error fetching article:', error);
                 setArticle(null);
