@@ -83,15 +83,18 @@ export default function useOjtData() {
     useEffect(() => {
         if (linkages) {
             const filteredData = linkages.filter((linkage) => {
-                if (filterType === 'all' && linkage.name.toLowerCase().includes(searchQuery.toLowerCase())) {
-                    return true
-                }
-                return linkage.type === filterType
+                const matchesSearch = linkage.name.toLowerCase().includes(searchQuery.toLowerCase())
+                const matchesFilter = 
+                    filterType === 'all' || 
+                    (filterType === 'active' && linkage.is_active) || 
+                    (filterType === 'inactive' && !linkage.is_active)
+                
+                return matchesSearch && matchesFilter
             })
             setFilteredLinkages(filteredData)
             setCurrentPage(1)
         }
-    }, [filterType, searchQuery])
+    }, [filterType, searchQuery, linkages])
 
     useEffect(() => {
         if (filteredLinkages) {

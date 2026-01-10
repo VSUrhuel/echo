@@ -80,16 +80,17 @@ export default function useFacultyData() {
 
     useEffect(() => {
         if(profiles) {
-            const filteredProfiles = profiles.filter((profile) => {
-                if(filterType == 'all' && (profile.first_name.toLowerCase().includes(searchQuery.toLowerCase()) || profile.last_name.toLowerCase().includes(searchQuery.toLowerCase()))) {
-                    return true
-                }
-                return profile.designation === filterType
+            const filtered = profiles.filter((profile) => {
+                const fullName = (profile.first_name + ' ' + profile.last_name).toLowerCase()
+                const matchesSearch = fullName.includes(searchQuery.toLowerCase())
+                const matchesFilter = filterType === 'all' || profile.designation === filterType
+                
+                return matchesSearch && matchesFilter
             })
-            setFilteredProfiles(filteredProfiles)
+            setFilteredProfiles(filtered)
             setCurrentPage(1)
         }
-    }, [filterType, searchQuery])
+    }, [filterType, searchQuery, profiles])
 
     useEffect(() => {
         if(filteredProfiles) {

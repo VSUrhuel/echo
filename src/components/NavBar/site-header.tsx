@@ -53,7 +53,7 @@ export const SiteHeader = () => {
                     >
                         <div className="flex w-full flex-1 flex-row-reverse items-center justify-between gap-12 lg:w-auto lg:flex-row">
                             <Link
-                                href="/academics"
+                                href="/"
                                 aria-label="home"
                                 className="flex items-center space-x-2"
                             >
@@ -119,7 +119,7 @@ export const SiteHeader = () => {
                                             href={item.href}
                                             className={cn(
                                                 "font-semibold block duration-50 transition-colors relative after:absolute after:-bottom-6.5 after:left-1/2 after:h-0.5 after:w-0 after:-translate-x-1/2 after:bg-current after:transition-all after:duration-200 hover:after:w-full",
-                                                scrolled ? "text-foreground hover:text-[#24418f]" : "text-white"
+                                                scrolled ? "text-foreground hover:text-[#24418f]" : "text-white text-shadow-lg shadow-blue-900"
                                             )}
                                         >
                                             <span>{item.name}</span>

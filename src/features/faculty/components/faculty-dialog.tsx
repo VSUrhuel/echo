@@ -24,7 +24,7 @@ interface FacultyDialogProps {
   onOpenChange: (open: boolean) => void
   formData: Profile
   setFormData: (data: Profile) => void
-  onSave: (data: Profile, editingProfileId: number | null, onSuccess: () => void) => void
+  onSave: (data: Profile, editingProfileId: string | null, onSuccess: () => void) => void
   isSaving: boolean
   isUploading: boolean
   handleImageUpload: (file: File) => Promise<string | null | undefined>
@@ -312,7 +312,7 @@ export default function FacultyDialog({
           <Button variant="outline" onClick={() => onOpenChange(false)} disabled={isSaving || isUploading}>
             Cancel
           </Button>
-          <Button onClick={() => onSave(formData, parseInt(editingProfile?.id || "0") || null, () => {
+          <Button onClick={() => onSave(formData, editingProfile?.id || null, () => {
             onOpenChange(false)
             resetForm()
           })} className="bg-primary text-primary-foreground min-w-[120px]" disabled={isSaving || isUploading}>

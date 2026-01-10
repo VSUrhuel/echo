@@ -54,31 +54,40 @@ export const useWriteArticleAction = (articleFormData?: ArticleFormData, propsAr
             title: formData.title,
             content: formData.content,
             excerpt: formData.excerpt,
-            slug: formData.slug,
             category: formData.category,
+            slug: formData.slug,
             tags: formData.tags as string[],
             cover_image_url: formData.cover_image_url,
             author_id: currentUser,
             status: status,
-            published_at: status === "draft" && articleId === null ? null : new Date().toISOString(),
+            published_at: status === "draft" ? null : new Date().toISOString(),
             updated_at: new Date().toISOString(),
         };
 
         let result;
 
-        if (articleId) {
+        if (articleId && status === "published") {
             result = await supabase
                 .from('articles')
                 .update(articlePayload)
                 .eq('id', articleId)
                 .select()
                 .single();
+        } else if (articleId && status === "draft") {
+            const {slug, ...articleData} = articlePayload;
+            result = await supabase
+                .from('articles')
+                .update(articleData)
+                .eq('id', articleId)
+                .select()
+                .single();
         } else {
+            const {slug, ...articleData} = articlePayload;
             result = await supabase
                 .from('articles')
                 .insert([
                     {
-                        ...articlePayload,
+                        ...articleData,
                         views_count: 0,
                         created_at: new Date().toISOString(),
                     },
@@ -108,6 +117,7 @@ export const useWriteArticleAction = (articleFormData?: ArticleFormData, propsAr
       }
 
       toast.success(status === 'draft' ? 'Article saved as draft!' : 'Article published successfully!');
+
     } catch (error: any) {
       toast.error('Error publishing article: ' + (error.message || error));
     }

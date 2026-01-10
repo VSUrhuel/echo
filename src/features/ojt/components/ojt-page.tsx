@@ -33,7 +33,7 @@ export default function OjtPage() {
                 handleLogoUpload={handleLogoUpload}
                 isUploading={isUploading}
             />
-            <main className="flex-1 p-6">
+            <main className="flex-1 p-6 space-y-6">
                 <OjtStatCards stats={{
                     total: filteredLinkages?.length || 0, 
                     active: filteredLinkages?.filter(l => l.is_active).length || 0, 
