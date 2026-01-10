@@ -13,6 +13,8 @@ interface OjtHeaderProps {
     resetForm: () => void
     onSubmit: () => void
     isSaving: boolean
+    handleLogoUpload: (file: File) => Promise<string | null | undefined>
+    isUploading: boolean
 }
 
 export default function OjtHeader({
@@ -23,7 +25,9 @@ export default function OjtHeader({
     setFormData, 
     resetForm, 
     onSubmit,
-    isSaving
+    isSaving,
+    handleLogoUpload,
+    isUploading
 }: OjtHeaderProps) {
     return (
         <header className="sticky top-0 z-10 flex h-16 items-center justify-between gap-4 border-b border-border bg-background px-6">
@@ -49,6 +53,8 @@ export default function OjtHeader({
                 isSaving={isSaving}
                 editingLinkage={editingLinkage}
                 resetForm={resetForm}
+                handleLogoUpload={handleLogoUpload}
+                isUploading={isUploading}
             />
         </header>
     )

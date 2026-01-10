@@ -1,5 +1,6 @@
 "use client"
 import { Profile } from "@/types"
+import { imageSizeCheck } from "@/utils/imageSizeCheck"
 import {createClient} from "@/utils/supabase/client"
 import { useState } from "react"
 import { toast } from "sonner"
@@ -29,6 +30,7 @@ export default function useFacultyAction() {
     const handleImageUpload = async (file: File) => {
         setIsUploading(true)
         try {
+            if(!imageSizeCheck(file)) return
             const fileExt = file.name.split('.').pop()
             const fileName = `${Date.now()}-${Math.random().toString(36).substring(2)}.${fileExt}`
             const filePath = `faculty/${fileName}`

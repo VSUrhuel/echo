@@ -27,7 +27,7 @@ interface FacultyDialogProps {
   onSave: (data: Profile, editingProfileId: number | null, onSuccess: () => void) => void
   isSaving: boolean
   isUploading: boolean
-  handleImageUpload: (file: File) => Promise<string | null>
+  handleImageUpload: (file: File) => Promise<string | null | undefined>
   editingFaculty: boolean
   resetForm: () => void,
   editingProfile: Profile | null

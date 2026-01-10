@@ -9,7 +9,7 @@ import { Partner } from "@/types";
 
 export default function OjtPage() {
     const { isAddDialogOpen, setIsAddDialogOpen, editingLinkage,setEditingLinkage ,formData, setFormData, resetForm, searchQuery, setSearchQuery, filterType, setFilterType, isLoading, nextPage, prevPage, paginatedLinkages, filteredLinkages } = useOjtData()
-    const { onSubmit, deletePartner, isSaving } = useOjtAction()
+    const { onSubmit, deletePartner, isSaving, isUploading, handleLogoUpload } = useOjtAction()
 
     const handleSubmit = async () => {
         await onSubmit(formData, editingLinkage?.id || null, () => {
@@ -29,6 +29,8 @@ export default function OjtPage() {
                 resetForm={resetForm} 
                 onSubmit={handleSubmit}
                 isSaving={isSaving}
+                handleLogoUpload={handleLogoUpload}
+                isUploading={isUploading}
             />
             <main className="flex-1 p-6">
                 <OjtStatCards stats={{
