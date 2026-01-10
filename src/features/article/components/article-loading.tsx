@@ -28,7 +28,6 @@ export default function ArticleLoading() {
                 {/* Stats Bar Skeleton */}
                 <div className="mb-10 lg:mb-14">
               <div className="flex items-center gap-3 mb-6">
-                <div className="w-20 h-8 bg-gray-200 dark:bg-gray-700 rounded-full animate-pulse"></div>
                 <div className="w-32 h-8 bg-gray-200 dark:bg-gray-700 rounded-full animate-pulse"></div>
               </div>
               

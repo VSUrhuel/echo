@@ -48,7 +48,7 @@ export default function ArticleViewHeader({
       </div>
 
       {/* Main Title with Gradient */}
-      <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-gray-900 dark:text-white leading-tight tracking-tight mb-8 relative">
+      <h1 className="text-xl md:text-2xl lg:text-4xl font-bold text-gray-900 dark:text-white leading-tight tracking-tight mb-8 relative">
         {title}
         {/* Decorative underline */}
         <span className="absolute -bottom-4 left-0 w-24 h-1 bg-gradient-to-r from-primary to-secondary rounded-full"></span>

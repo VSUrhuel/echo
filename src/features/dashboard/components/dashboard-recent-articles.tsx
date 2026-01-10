@@ -1,6 +1,6 @@
 import { Article } from "@/types";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Calendar, Eye, TrendingUp, Clock, FileText, ChevronRight } from "lucide-react";
+import { Calendar, Eye, TrendingUp, Clock, FileText, ChevronRight, ExternalLink } from "lucide-react";
 import formatDate from "@/features/article/utils/format-date";
 import { Button } from "@/components/ui/button";
 import { useRouter } from "next/navigation";
@@ -124,13 +124,13 @@ export default function DashboardRecentArticles({articles} : {articles: Article[
                 </div>
                 
                 <div className="mt-6 pt-4 border-t border-border/50">
-                    <Button 
-                        variant="outline" 
-                        className="w-full justify-center border-border hover:border-primary/50 hover:text-primary"
-                        onClick={() => router.push('/admin-articles')}
-                    >
-                        View All Articles
-                    </Button>
+                     <button
+                    onClick={() => router.push('/admin-articles')}
+                    className="w-full mt-6 py-3 text-sm font-medium text-primary hover:text-primary/80 hover:bg-primary/5 rounded-lg transition-colors flex items-center justify-center gap-2 border border-border hover:border-primary/30"
+                  >
+                    Browse All Articles
+                    <ExternalLink className="w-4 h-4" />
+                  </button>
                 </div>
             </CardContent>
         </Card>

@@ -19,20 +19,23 @@ import {
   SelectValue,
 } from "@/components/ui/select"
 import formatDate from "../utils/format-date";
+import { AlertDialogContent, AlertDialogTrigger, AlertDialogHeader, AlertDialogTitle, AlertDialogDescription, AlertDialogCancel, AlertDialogFooter, AlertDialogAction, AlertDialog } from "@/components/ui/alert-dialog";
 
 interface ArticleTableProps {
   articles: Article[],
-  loading: boolean
+  loading: boolean,
+  onDeleteSuccess?: () => void
 }
 
 type StatusFilter = 'all' | 'published' | 'draft'
 
-export default function ArticleTable({articles, loading}: ArticleTableProps) {
+export default function ArticleTable({articles, loading, onDeleteSuccess}: ArticleTableProps) {
     const { handleHardDeleteArticle } = useArticleAction()
     const [searchParams, setSearchParams] = useState({
         search: "",
         status: 'all' as StatusFilter
     })
+    const [idToDelete, setIdToDelete] = useState<number | null>(null);
     const supabase = createClient();
     const [currentUserId, setCurrentUserId] = useState<string | null>(null);
     const [stats, setStats] = useState({
@@ -96,7 +99,7 @@ export default function ArticleTable({articles, loading}: ArticleTableProps) {
                                 <p className="text-sm font-medium text-muted-foreground">Draft Articles</p>
                                 <p className="text-3xl font-bold text-secondary mt-2">{stats.drafts}</p>
                             </div>
-                            <div className="p-3 rounded-full bg-secondary/20">
+                            <div className="p-3 rounded-full bg-secondary/20 ">
                                 <EyeOff className="h-6 w-6 text-secondary" />
                             </div>
                         </div>
@@ -309,7 +312,7 @@ export default function ArticleTable({articles, loading}: ArticleTableProps) {
                                                         <Button
                                                             variant="ghost"
                                                             size="icon"
-                                                            className="h-8 w-8 text-muted-foreground hover:text-primary"
+                                                            className="h-8 w-8 text-muted-foreground hover:text-primary/80 hover:bg-primary/5 rounded-lg transition-colors flex items-center justify-center gap-2 border border-border hover:border-primary/30"
                                                             onClick={() => router.push(`/admin-articles/view/${article.id}`)}
                                                         >
                                                             <Eye className="h-4 w-4" />
@@ -319,7 +322,7 @@ export default function ArticleTable({articles, loading}: ArticleTableProps) {
                                                             <Button
                                                                 variant="ghost"
                                                                 size="icon"
-                                                                className="h-8 w-8 text-muted-foreground hover:text-blue-600"
+                                                                className="h-8 w-8 text-muted-foreground hover:text-primary/80 hover:bg-primary/5 rounded-lg transition-colors flex items-center justify-center gap-2 border border-border hover:border-primary/30"
                                                                 onClick={() => router.push(`/admin-articles/edit/${article.id}`)}
                                                             >
                                                                 <Edit className="h-4 w-4" />
@@ -331,7 +334,7 @@ export default function ArticleTable({articles, loading}: ArticleTableProps) {
                                                                 <Button 
                                                                     variant="ghost" 
                                                                     size="icon" 
-                                                                    className="h-8 w-8 text-muted-foreground hover:text-destructive"
+                                                                    className="h-8 w-8 text-muted-foreground hover:text-primary/80 hover:bg-primary/5 rounded-lg transition-colors flex items-center justify-center gap-2 border border-border hover:border-primary/30"
                                                                 >
                                                                     <MoreHorizontal className="h-4 w-4" />
                                                                 </Button>
@@ -353,13 +356,17 @@ export default function ArticleTable({articles, loading}: ArticleTableProps) {
                                                                         Edit Article
                                                                     </DropdownMenuItem>
                                                                 )}
-                                                                <DropdownMenuItem 
-                                                                    onClick={() => handleHardDeleteArticle(article.id)}
+                                                                <DropdownMenuItem
                                                                     className="text-destructive focus:text-destructive cursor-pointer"
+                                                                    onSelect={(e) => {
+                                                                        e.preventDefault();
+                                                                        setIdToDelete(article.id);
+                                                                    }}
                                                                 >
                                                                     <Trash2 className="mr-2 h-4 w-4" />
                                                                     Delete Permanently
                                                                 </DropdownMenuItem>
+                                                                
                                                             </DropdownMenuContent>
                                                         </DropdownMenu>
                                                     </div>
@@ -373,6 +380,34 @@ export default function ArticleTable({articles, loading}: ArticleTableProps) {
                     )}
                 </CardContent>
             </Card>
+
+            <AlertDialog open={!!idToDelete} onOpenChange={(open) => !open && setIdToDelete(null)}>
+                <AlertDialogContent>
+                    <AlertDialogHeader>
+                        <AlertDialogTitle>Do you want to delete this article?</AlertDialogTitle>
+                        <AlertDialogDescription>
+                            This article will be permanently deleted. This action cannot be undone.
+                        </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter>
+                        <AlertDialogCancel>Cancel</AlertDialogCancel>
+                        <AlertDialogAction 
+                            className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                            onClick={async () => {
+                                if (idToDelete) {
+                                    await handleHardDeleteArticle(idToDelete);
+                                    setIdToDelete(null);
+                                    if (onDeleteSuccess) {
+                                        onDeleteSuccess();
+                                    }
+                                }
+                            }}
+                        >
+                            Delete
+                        </AlertDialogAction>
+                    </AlertDialogFooter>
+                </AlertDialogContent>
+            </AlertDialog>
         </main>
     );
 }

@@ -18,15 +18,15 @@ export default function ArticlePageHeader() {
             <div className="flex items-center gap-3">
                 <Button
                     asChild
-                    className="bg-gradient-to-r from-primary to-secondary text-primary-foreground hover:from-primary/90 hover:to-secondary/90 shadow-md hover:shadow-lg transition-all group"
+                    className="hover:text-primary/80 hover:bg-primary/5 rounded-lg transition-colors flex items-center justify-center gap-2 border border-border hover:border-primary/30"
                 >
                     <Link href="/admin-write">
                         <div className="flex items-center gap-2">
-                            <div className="p-1 rounded-md bg-white/20 group-hover:bg-white/30 transition-colors">
+                            <div className="rounded-md group-hover:bg-white/30 transition-colors">
                                 <Plus className="h-4 w-4" />
                             </div>
                             <span>New Article</span>
-                            <Sparkles className="h-3.5 w-3.5 ml-1 opacity-0 group-hover:opacity-100 transition-opacity" />
+                            <Sparkles className="h-3.5 w-3.5 ml-1 opacity-100 hover:opacity-100 transition-opacity" />
                         </div>
                     </Link>
                 </Button>

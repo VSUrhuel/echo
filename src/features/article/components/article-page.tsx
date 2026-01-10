@@ -5,11 +5,11 @@ import ArticleTable from "./article-table";
 import { DataTablePagination } from "@/components/ui/data-table-pagination";
 
 export default function ArticlePage() {
-    const { articles, loading, page, totalPages, prevPage, nextPage, paginatedArticles, setPage } = useArticleData();
+    const { articles, loading, page, totalPages, prevPage, nextPage, paginatedArticles, setPage, refetch } = useArticleData();
     return (
         <div >
             <ArticelePageHeader />
-            <ArticleTable articles={paginatedArticles} loading={loading} />
+            <ArticleTable articles={paginatedArticles} loading={loading} onDeleteSuccess={refetch} />
             <div className="mx-6 mb-6">
             <DataTablePagination
                 currentPage={page}

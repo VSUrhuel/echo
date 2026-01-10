@@ -2,13 +2,14 @@ import { Article } from "@/types";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Eye, FileText, TrendingUp, Users, Calendar, BarChart3 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
+import useDashboardData from "../hooks/useDashboardData";
 
 export default function DashboardStats({articles} : {articles: Article[]}) {
     const totalViews = articles.reduce((total, article) => total + article.views_count!, 0);
     const publishedArticles = articles.filter(article => article.status === 'published').length;
     const draftArticles = articles.filter(article => article.status === 'draft').length;
     const avgViews = articles.length > 0 ? Math.round(totalViews / articles.length) : 0;
-    
+    const {rateLastMonthArticles, rateLastMonthViews} = useDashboardData();
     const stats = [
         {
             title: "Total Articles",
@@ -17,7 +18,7 @@ export default function DashboardStats({articles} : {articles: Article[]}) {
             icon: FileText,
             color: "bg-gradient-to-br from-primary/20 to-primary/5",
             iconColor: "text-primary",
-            trend: "+12% this month"
+            trend: rateLastMonthArticles
         },
         {
             title: "Total Views",
@@ -26,7 +27,7 @@ export default function DashboardStats({articles} : {articles: Article[]}) {
             icon: Eye,
             color: "bg-gradient-to-br from-secondary/20 to-secondary/5",
             iconColor: "text-secondary",
-            trend: "+24% from last month"
+            trend: rateLastMonthViews
         },
         {
             title: "Avg. Views per Article",
