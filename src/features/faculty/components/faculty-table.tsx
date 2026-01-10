@@ -1,11 +1,14 @@
+"use client"
+
 import { Profile } from "@/types"
 import { Card, CardContent } from "@/components/ui/card"
-import Image from "next/image"
-import { Mail, Pencil, Trash2 } from "lucide-react"
+import { Mail, Pencil, Trash2, Phone, Calendar, GraduationCap, MapPin, Award, ExternalLink } from "lucide-react"
 import GetFacultyStatusBadge from "../utils/get-faculty-badge"
 import { Button } from "@/components/ui/button"
-
-import { Dialog, DialogContent, DialogDescription, DialogFooter,DialogClose, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
+import { DialogClose } from "@radix-ui/react-dialog"
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import { Badge } from "@/components/ui/badge"
 
 interface FacultyTableProps {
     profiles: Profile[]
@@ -20,66 +23,171 @@ export default function FacultyTable({
     onEdit,
     onDelete
 }: FacultyTableProps) {
+    const getFacultyInitials = (firstName: string, lastName: string) => {
+        return `${firstName?.[0] || ''}${lastName?.[0] || ''}`.toUpperCase()
+    }
+
     return (
-        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
             {profiles.map((member) => (
-              <Card key={member.id} className="overflow-hidden">
-                <div className="relative aspect-square bg-muted">
-                  <img
-                    src={member.image_url || "/placeholder.svg?height=300&width=300&query=professor headshot"}
-                    alt={member.first_name}
-                    className="object-cover"
-                  />
-                  <div className="absolute top-2 right-2">{GetFacultyStatusBadge(member.status || "Active")}</div>
-                </div>
-                <CardContent className="p-4">
+                <Card 
+                  key={member.id} 
+                  className="group overflow-hidden border-border/50 hover:border-primary/30 hover:shadow-lg transition-all duration-300"
+              >
+                  {/* Large Profile Image Section - Now majority of card */}
+                  <div className="relative h-64 bg-gray-100 dark:bg-gray-800">
+                  {/* Profile Image */}
+                  <div className="w-full h-full">
+                      {member.image_url ? (
+                          <img
+                              src={member.image_url}
+                              alt={`${member.first_name} ${member.last_name}`}
+                              className="w-full h-full object-cover"
+                          />
+                      ) : (
+                          <div className="w-full h-full flex items-center justify-center">
+                              <Avatar className="h-40 w-40 border-4 border-background shadow-lg">
+                                  <AvatarFallback className="bg-gradient-to-br from-primary to-secondary text-white text-4xl font-bold">
+                                      {getFacultyInitials(member.first_name, member.last_name)}
+                                  </AvatarFallback>
+                              </Avatar>
+                          </div>
+                      )}
+                  </div>
+                  
+                  {/* Status Badge */}
+                  <div className="absolute top-4 right-4">
+                      {GetFacultyStatusBadge(member.status?.toLowerCase() || "active")}
+                  </div>
+              </div>
+
+              <CardContent className="px-6 space-y-2">
+                  {/* Faculty Info */}
                   <div className="space-y-2">
-                    <div>
-                      <h3 className="font-semibold text-foreground line-clamp-1">{member.first_name + " " + member.last_name}</h3>
-                      <p className="text-sm text-muted-foreground line-clamp-1">{member.designation}</p>
-                    </div>
-                    <p className="text-sm font-medium text-primary line-clamp-1">{member.specialization}</p>
-                    <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                      <Mail className="h-3.5 w-3.5 flex-shrink-0" />
-                      <span className="truncate">{member.email}</span>
-                    </div>
-                  </div>
-                  <div className="flex items-center justify-end gap-2 mt-4 pt-4 border-t border-border">
-                    <Button variant="ghost" size="sm" onClick={() => onEdit(member)}>
-                      <Pencil className="h-4 w-4" />
-                    </Button>
-                    <Dialog>
-                            <DialogTrigger asChild>
-                              <Button
-                      variant="ghost"
-                      size="sm"
-                      className="text-destructive hover:text-destructive"
+                      <h3 className="text-xl font-bold text-foreground">
+                          {member.first_name} {member.last_name}
+                      </h3>
+                      <div className="flex items-center gap-2">
+                          <Award className="h-4 w-4 text-primary" />
+                          <p className="text-md font-medium text-primary">
+                              {member.designation}
+                          </p>
+                      </div>
                       
-                    >
-                      <Trash2 className="h-4 w-4" />
-                    </Button>
-                            </DialogTrigger>
-                            <DialogContent>
-                              <DialogHeader>
-                                <DialogTitle>Delete Faculty</DialogTitle>
-                                <DialogDescription>
-                                  Are you sure you want to delete <strong>{member.first_name + " " + member.last_name}</strong>? This action cannot be undone.
-                                </DialogDescription>
-                              </DialogHeader>
-                              <DialogFooter>
-                                <DialogClose asChild>
-                                  <Button variant="outline">Cancel</Button>
-                                </DialogClose>
-                                <DialogClose asChild onClick={() => onDelete(member.id)}>
-                                  <Button variant="destructive">Delete</Button>
-                                </DialogClose>
-                              </DialogFooter>
-                            </DialogContent>
-                          </Dialog>
+                      {member.specialization && (
+                          <Badge variant="secondary" className="text-sm px-2 py-1 font-normal">
+                              <GraduationCap className="h-4 w-4 mr-2" />
+                              {member.specialization}
+                          </Badge>
+                      )}
                   </div>
-                </CardContent>
+
+                  {/* Contact Info */}
+                  <div className="space-y-3">
+                      {member.email && (
+                          <div className="flex text-sm items-center gap-3 p-2 rounded-lg bg-muted/30 hover:bg-muted/50 transition-colors">
+                              <div className="p-1 rounded-lg bg-primary/20">
+                                  <Mail className="h-3 w-3 text-primary" />
+                              </div>
+                              <div className="flex-1 min-w-0">
+                                  <a 
+                                      href={`mailto:${member.email}`}
+                                      className="font-medium text-sm hover:text-primary hover:underline transition-colors truncate block"
+                                  >
+                                      {member.email}
+                                  </a>
+                              </div>
+                          </div>
+                      )}
+                      
+                      {member.consultation_hours && (
+                          <div className="flex items-center gap-3 p-2 rounded-lg bg-muted/30 hover:bg-muted/50 transition-colors">
+                              <div className="p-1 rounded-lg bg-secondary/20">
+                                  <Calendar className="h-3 w-3 text-secondary" />
+                              </div>
+                              <div className="flex-1 min-w-0">
+                                  <p className="font-medium text-sm">{member.consultation_hours}</p>
+                              </div>
+                          </div>
+                      )}
+                  </div>
+                      {/* Actions */}
+                      <div className="flex items-center justify-center gap-2 mt-2 pt-2 border-t border-border/30">
+                          <Button 
+                              variant="ghost" 
+                              size="sm"
+                              className="h-8 w-8 rounded-full text-muted-foreground hover:text-primary hover:bg-primary/10 transition-colors group"
+                              onClick={() => onEdit(member)}
+                              title="Edit faculty"
+                          >
+                              <div className="flex items-center justify-center">
+                                  <Pencil className="h-4 w-4 group-hover:scale-110 transition-transform" />
+                              </div>
+                          </Button>
+                          
+                          <Dialog>
+                              <DialogTrigger asChild>
+                                  <Button
+                                      variant="ghost"
+                                      size="sm"
+                                      className="h-9 w-9 rounded-full text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-colors group"
+                                      title="Delete faculty"
+                                  >
+                                      <div className="flex items-center justify-center">
+                                          <Trash2 className="h-4 w-4 group-hover:scale-110 transition-transform" />
+                                      </div>
+                                  </Button>
+                              </DialogTrigger>
+                              <DialogContent>
+                                  <DialogHeader>
+                                      <DialogTitle className="flex items-center gap-2 text-destructive">
+                                          <Trash2 className="h-5 w-5" />
+                                          Delete Faculty Member
+                                      </DialogTitle>
+                                      <DialogDescription className="pt-4">
+                                          <div className="flex items-center gap-3 mb-4 p-3 bg-muted rounded-lg">
+                                              <Avatar className="h-12 w-12">
+                                                  {member.image_url ? (
+                                                      <AvatarImage src={member.image_url} alt={`${member.first_name} ${member.last_name}`} />
+                                                  ) : (
+                                                      <AvatarFallback className="bg-gradient-to-br from-primary to-secondary text-white">
+                                                          {getFacultyInitials(member.first_name, member.last_name)}
+                                                      </AvatarFallback>
+                                                  )}
+                                              </Avatar>
+                                              <div>
+                                                  <p className="font-semibold text-foreground">{member.first_name} {member.last_name}</p>
+                                                  <p className="text-sm text-muted-foreground">{member.designation}</p>
+                                              </div>
+                                          </div>
+                                          <p className="text-foreground">
+                                              Are you sure you want to delete <strong className="font-semibold">{member.first_name} {member.last_name}</strong>? 
+                                              This will permanently remove their profile, articles, and associated data.
+                                          </p>
+                                      </DialogDescription>
+                                  </DialogHeader>
+                                  <DialogFooter className="gap-2 sm:gap-0">
+                                      <DialogClose asChild>
+                                          <Button variant="outline" className="w-full sm:w-auto">
+                                              Cancel
+                                          </Button>
+                                      </DialogClose>
+                                      <DialogClose asChild>
+                                          <Button 
+                                              variant="destructive"
+                                              className="w-full sm:w-auto"
+                                              onClick={() => onDelete(member.id)}
+                                          >
+                                              Delete Permanently
+                                          </Button>
+                                      </DialogClose>
+                                  </DialogFooter>
+                              </DialogContent>
+                          </Dialog>
+                      </div>
+                  </CardContent>
               </Card>
             ))}
-          </div>
+        </div>
     )
 }
