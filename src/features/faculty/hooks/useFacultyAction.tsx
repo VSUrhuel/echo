@@ -10,7 +10,7 @@ export default function useFacultyAction() {
     const [isSaving, setIsSaving] = useState(false)
     const [isUploading, setIsUploading] = useState(false)
 
-    const onSubmit = async (data: Profile, editingProfileId: number | null, onSuccess: () => void) => {
+    const onSubmit = async (data: Profile, editingProfileId: string | null, onSuccess: () => void) => {
         
         setIsSaving(true)
         try {
@@ -84,36 +84,44 @@ export default function useFacultyAction() {
     
     const createProfile = async (userData: Profile) => {
         try {
-             const {id, ...insertData} = userData // get only the data except id
-            const {data, error : errorAuth} = await supabase.auth.signUp({
+            const { id, ...insertData } = userData // get only the data except id
+            const { data, error: errorAuth } = await supabase.auth.signUp({
                 email: insertData.email,
                 password: 'iloveVSU2025',
                 options: {
                     data: {
                         first_name: insertData.first_name,
                         last_name: insertData.last_name,
-                        role: 'faculty'
-                    }
-                }
+                        role: 'faculty',
+                    },
+                },
             })
 
-           
-            const { error : errorInsert } = await supabase.from('profiles').insert({
-                id: data.user?.id,
+            if (errorAuth) {
+                toast.error('Error signing up: ' + errorAuth.message)
+                throw errorAuth
+            }
+
+            if (!data.user) {
+                toast.error('User creation failed: No user returned')
+                throw new Error('User creation failed')
+            }
+
+            const { error: errorInsert } = await supabase.from('profiles').insert({
+                id: data.user.id,
                 ...insertData,
                 created_at: new Date().toISOString(),
-                updated_at: new Date().toISOString()
+                updated_at: new Date().toISOString(),
             })
 
-            
-            if (errorInsert || errorAuth) {
-                toast.error('Error creating profile')
-                throw errorInsert || errorAuth
+            if (errorInsert) {
+                toast.error('Error creating profile: ' + errorInsert.message)
+                throw errorInsert
             }
+
             toast.success('Profile created successfully')
         } catch (error) {
             console.error('Error creating profile: ', error)
-            toast.error('Error creating profile')
         }
     }
 

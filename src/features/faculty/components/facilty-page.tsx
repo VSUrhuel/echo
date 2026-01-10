@@ -35,7 +35,7 @@ export default function FacultyPage() {
 
     const { onSubmit, handleImageUpload, isSaving, isUploading, handleSoftDelete } = useFacultyAction()
 
-    const handleSubmit = async (formData: Profile, editingProfileId: number | null) => {
+    const handleSubmit = async (formData: Profile, editingProfileId: string | null) => {
         if(formData.email == '') {
             toast.error('Email is required')
             return
