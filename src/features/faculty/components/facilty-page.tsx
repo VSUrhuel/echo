@@ -9,6 +9,7 @@ import FacultyTable from "@/features/faculty/components/faculty-table"
 import { Profile } from "@/types"
 import { Kufam } from "next/font/google"
 import { toast } from "sonner"
+import { DataTablePagination } from "@/components/ui/data-table-pagination"
 
 export default function FacultyPage() {
     const { 
@@ -27,7 +28,9 @@ export default function FacultyPage() {
         nextPage, 
         prevPage, 
         paginatedProfiles,
-        filteredProfiles
+        filteredProfiles,
+        currentPage,
+        setCurrentPage
     } = useFacultyData()
 
     const { onSubmit, handleImageUpload, isSaving, isUploading, handleSoftDelete } = useFacultyAction()
@@ -78,23 +81,12 @@ export default function FacultyPage() {
                     }}
                 />
 
-                {/* Pagination Controls */}
-                <div className="flex items-center justify-end gap-2">
-                    <button 
-                        onClick={prevPage}
-                        className="px-3 py-1 border rounded disabled:opacity-50"
-                        disabled={isLoading}
-                    >
-                        Previous
-                    </button>
-                    <button 
-                        onClick={nextPage}
-                        className="px-3 py-1 border rounded disabled:opacity-50"
-                        disabled={isLoading}
-                    >
-                        Next
-                    </button>
-                </div>
+                <DataTablePagination 
+                    currentPage={currentPage}
+                    totalPages={Math.ceil((filteredProfiles?.length || 0) / 8)}
+                    onPageChange={(page) => setCurrentPage(page)}
+                    isLoading={isLoading}
+                />
             </main>
 
             <FacultyDialog

@@ -16,6 +16,8 @@ export default function useOjtData() {
     const [searchQuery, setSearchQuery] = useState('')
     const [filterType, setFilterType] = useState('all')
     const [isLoading, setIsLoading] = useState(false)
+    const [hasPreviousPage, setHasPreviousPage] = useState(false)
+    const [hasNextPage, setHasNextPage] = useState(false)
 
     const numberPerPage = 10
     const [currentPage, setCurrentPage] = useState(1)
@@ -76,7 +78,7 @@ export default function useOjtData() {
             }
         }
         fetchLinkages()
-    }, [paginatedLinkages])
+    }, [])
 
     useEffect(() => {
         if (linkages) {
@@ -87,8 +89,9 @@ export default function useOjtData() {
                 return linkage.type === filterType
             })
             setFilteredLinkages(filteredData)
+            setCurrentPage(1)
         }
-    }, [linkages, filterType, searchQuery])
+    }, [filterType, searchQuery])
 
     useEffect(() => {
         if (filteredLinkages) {
@@ -105,6 +108,7 @@ export default function useOjtData() {
         if(filteredLinkages) {
             setCurrentPage((prevPage) => Math.min(prevPage + 1, Math.ceil(filteredLinkages.length / numberPerPage)))
         }
+
     }
 
     const prevPage = () => {
@@ -112,6 +116,17 @@ export default function useOjtData() {
             setCurrentPage((prevPage) => Math.max(1, prevPage - 1))
         }
     }
+
+    useEffect(() => {
+        const hasPreviousPageCheck = () => {
+            return currentPage > 1
+        }
+        const hasNextPageCheck = () => {
+            return currentPage < Math.ceil(filteredLinkages ? filteredLinkages.length : 0 / numberPerPage)
+        }
+        setHasPreviousPage(hasPreviousPageCheck())
+        setHasNextPage(hasNextPageCheck())
+    }, [currentPage, filteredLinkages])
 
     return {
         isAddDialogOpen,
@@ -130,9 +145,12 @@ export default function useOjtData() {
         isLoading,
         nextPage,
         prevPage,
-
+        hasPreviousPage,
+        hasNextPage,
         paginatedLinkages,
         filteredLinkages,
         linkages,
+        currentPage,
+        setCurrentPage,
     }
 }

@@ -2,30 +2,52 @@
 
 import { useState, useEffect } from "react"
 import { createClient } from "@/utils/supabase/client"
-import type { NewsItem } from "@/features/homepage/types/news"
+import type { NewsArticle, NewsItem } from "@/features/homepage/types/news"
 
-export function useNewsUpdates(limit = 3) {
+export function useAllArticles(
+  page = 1,
+  category: string | null = null,
+  searchQuery: string | null = null,
+  itemsPerPage = 6,
+) {
   const supabase = createClient()
-  const [news, setNews] = useState<NewsItem[]>([])
+  const [articles, setArticles] = useState<NewsItem[]>([])
+  const [totalCount, setTotalCount] = useState(0)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {
-    async function fetchNews() {
+    async function fetchArticles() {
       try {
         setLoading(true)
         setError(null)
 
-        const { data, error: fetchError } = await supabase
+        let query = supabase
           .from("articles")
-          .select("*")
+          .select("*", { count: "exact" })
           .eq("status", "published")
           .order("published_at", { ascending: false })
-          .limit(limit)
+
+        // Apply category filter
+        if (category && category !== "All") {
+          query = query.eq("category", category)
+        }
+
+        // Apply search filter
+        if (searchQuery) {
+          query = query.or(`title.ilike.%${searchQuery}%,excerpt.ilike.%${searchQuery}%`)
+        }
+
+        // Apply pagination
+        const from = (page - 1) * itemsPerPage
+        const to = from + itemsPerPage - 1
+        query = query.range(from, to)
+
+        const { data, error: fetchError, count } = await query
 
         if (fetchError) throw fetchError
 
-        const formattedNews: NewsItem[] = (data || []).map((article) => {
+        const formattedArticles: NewsItem[] = (data || []).map((article) => {
           let imageUrl = "/news-article.png"
           if (article.cover_image_url) {
             const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
@@ -53,17 +75,21 @@ export function useNewsUpdates(limit = 3) {
           }
         })
 
-        setNews(formattedNews)
+
+        setArticles(formattedArticles)
+        setTotalCount(count || 0)
       } catch (err) {
-        setError(err instanceof Error ? err.message : "Failed to fetch news")
-        console.error("[v0] Error fetching news:", err)
+        setError(err instanceof Error ? err.message : "Failed to fetch articles")
+        console.error("[v0] Error fetching articles:", err)
       } finally {
         setLoading(false)
       }
     }
 
-    fetchNews()
-  }, [limit])
+    fetchArticles()
+  }, [page, category, searchQuery])
 
-  return { news, loading, error }
+  const totalPages = Math.ceil(totalCount / itemsPerPage)
+
+  return { articles, loading, error, totalCount, totalPages, currentPage: page }
 }

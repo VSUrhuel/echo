@@ -5,9 +5,12 @@ import Link from "next/link"
 import { ExternalLink, MoveRight } from "lucide-react"
 import { AspectRatio } from "@/components/ui/aspect-ratio"
 import { useNewsUpdates } from "@/features/homepage/hooks/use-news-updates"
+import { useRouter } from "next/navigation"
+import { Button } from "@/components/ui/button"
 
 export default function NewsUpdates() {
   const { news, loading, error } = useNewsUpdates(3)
+  const router = useRouter()
 
   if (loading) {
     return (
@@ -37,13 +40,13 @@ export default function NewsUpdates() {
           <p className="text-gray-600 mt-2 text-sm md:text-base">Stay updated with the latest from DevCom</p>
         </div>
 
-        <a
+        <Link
           href={`/news`}
           className="inline-flex items-center gap-2 text-[#207bbe] font-medium px-2 py-2 -ml-2 md:ml-0 rounded-lg hover:bg-blue-50 transition-colors text-sm md:text-base"
         >
           View All News
           <MoveRight className="size-4" />
-        </a>
+        </Link>
       </div>
 
       <div
@@ -79,14 +82,15 @@ export default function NewsUpdates() {
 
               <p className="text-gray-600 text-sm mb-6 flex-1 line-clamp-3 md:line-clamp-none">{item.description}</p>
 
-              <div>
-                <a
-                  href={`/news/${item.id}`}
-                  className="inline-flex items-center gap-2 text-[#207bbe] font-medium px-2 py-2 -ml-2 rounded-lg hover:bg-blue-50 transition-colors text-sm"
+              <div className="mt-auto pt-4">
+                <Button
+                  onClick={() => router.push(`/articles/${item.slug}`)}
+                  variant="ghost"
+                  className="inline-flex items-center gap-2 text-[#207bbe] font-medium px-2 py-2 -ml-2 rounded-lg hover:bg-blue-50 transition-colors text-sm h-auto"
                 >
                   Read More
                   <ExternalLink className="size-4" />
-                </a>
+                </Button>
               </div>
             </div>
           </div>

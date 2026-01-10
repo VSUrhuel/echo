@@ -3,9 +3,12 @@ import { createClient } from "@/utils/supabase/client"
 import { Partner } from "@/types"
 import { toast } from "sonner";
 import { useState } from "react";
+import { imageSizeCheck } from "@/utils/imageSizeCheck";
 
 export default function useOjtAction() {
     const [isSaving, setIsSaving] = useState(false)
+    const [isUploading, setIsUploading] = useState(false)
+
     const supabase = createClient()
 
     const onSubmit = async (data: Partner, editingLinkageId: number | null, onSuccess: () => void) => {
@@ -58,7 +61,6 @@ export default function useOjtAction() {
     }
 
     const addPartner = async (data: Partner) => {
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
         const { id, ...insertData } = data
         const { error } = await supabase.from('partners').insert([{
             ...insertData,
@@ -72,12 +74,43 @@ export default function useOjtAction() {
         }
         toast.success('Partner added successfully')
     }
+
+    const handleLogoUpload = async (file: File) => {
+        setIsUploading(true)
+        try {
+            if (!imageSizeCheck(file)) return
+            const filExt = file.name.split('.').pop()
+            const fileName = `${Date.now()}-${Math.random().toString(36).substring(2)}.${filExt}`
+            const filePath = `partner-logo/${fileName}`
+
+            const { error: uploadError } = await supabase.storage
+                .from('partner-logo')
+                .upload(filePath, file)
+
+            if (uploadError) throw uploadError
+
+            const { data: { publicUrl } } = supabase.storage
+                .from('partner-logo')
+                .getPublicUrl(filePath)
+
+            toast.success('Logo uploaded successfully')
+            return publicUrl
+        } catch (error: any) {
+            console.error('Error uploading image:', error)
+            toast.error('Error uploading logo: ' + error.message)
+            return null
+        } finally {
+            setIsUploading(false)
+        }
+    }
     
     return {
         onSubmit,
         updatePartner,
         deletePartner,
         addPartner,
-        isSaving
+        isSaving,
+        handleLogoUpload,
+        isUploading
     }
 }
