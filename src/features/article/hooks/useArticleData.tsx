@@ -3,7 +3,7 @@ import { Article, ArticleFormData } from "@/types";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 
-export const useArticleData = ({articleId}: {articleId?: string | undefined} = {}) => {
+export const useArticleData = ({articleId, slug}: {articleId?: string | undefined, slug?: string | undefined} = {}) => {
     const [articles, setArticles] = useState<Article[]>([]);
     const [selectedArticle, setSelectedArticle] = useState<ArticleFormData | null>(null);
     const [article, setArticle] = useState<Article | null>(null);
@@ -16,6 +16,7 @@ export const useArticleData = ({articleId}: {articleId?: string | undefined} = {
     useEffect(() => {
         const fetchArticles = async () => {
             setLoading(true)
+
             try 
             {
                 const { data, error } = await supabase
@@ -45,18 +46,33 @@ export const useArticleData = ({articleId}: {articleId?: string | undefined} = {
             setLoading(true)
             try 
             {
-                if(articleId == undefined)
+                if(articleId == undefined && slug == undefined)
                 {
                     return;
                 }
-                const { data, error } = await supabase
-                .from('articles')
-                .select('*, author:profiles(*)')
-                .eq('id', articleId).single();
-
-                if (error) {
-                    throw error;
+                let articleDetails;
+                if(articleId)
+                {
+                    articleDetails = await supabase
+                    .from('articles')
+                    .select('*, author:profiles(*)')
+                    .eq('id', articleId).single();
                 }
+                else if(slug)
+                {
+                    articleDetails = await supabase
+                    .from('articles')
+                    .select('*, author:profiles(*)')
+                    .eq('slug', slug).single();
+                }
+                
+                if (articleDetails?.error || !articleDetails?.data) {
+                    setArticle(null);
+                    setSelectedArticle(null);
+                    return;
+                }
+
+                const data = articleDetails.data;
 
                 const articleFormData = {
                     title: data.title,
@@ -85,13 +101,42 @@ export const useArticleData = ({articleId}: {articleId?: string | undefined} = {
 
                 setSelectedArticle(articleFormData);
                 setArticle(article);
-            }
-            finally {
+
+                // Track View
+                const trackView = async () => {
+                    try {
+                        const { data: { user } } = await supabase.auth.getUser();
+                        
+                        // Simple fingerprint for IP hash placeholder
+                        const fingerprint = `${navigator.userAgent}-${navigator.language}-${screen.width}x${screen.height}`;
+                        const hash = btoa(fingerprint).substring(0, 32);
+
+                        const {data: viewData, error: viewError} = await supabase.rpc('track_article_view', {
+                            p_article_id: data.id,
+                            p_viewer_id: user?.id || null,
+                            p_ip_hash: hash
+                        });
+
+                        if(viewError)
+                        {
+                            console.error('Error tracking view:', viewError);
+                        }
+
+                    } catch (trackError) {
+                        console.error('Error tracking view:', trackError);
+                    }
+                };
+                
+                trackView();
+            } catch (error) {
+                console.error('Error fetching article:', error);
+                setArticle(null);
+            } finally {
                 setLoading(false);
             }
         }
         fetchArticle();
-    }, [articleId]);
+    }, [articleId, slug]);
 
     useEffect(() => {
         const paginatedArticles = articles.slice((page - 1) * articlePerPage, page * articlePerPage);
@@ -123,6 +168,7 @@ export const useArticleData = ({articleId}: {articleId?: string | undefined} = {
         page,
         totalPages,
         prevPage,
-        nextPage
+        nextPage,
+        setPage
     }
 }

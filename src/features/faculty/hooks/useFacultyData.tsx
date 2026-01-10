@@ -76,7 +76,7 @@ export default function useFacultyData() {
             }
         }
         fetchFaculties()
-    }, [paginatedProfiles])
+    }, [])
 
     useEffect(() => {
         if(profiles) {
@@ -87,8 +87,9 @@ export default function useFacultyData() {
                 return profile.designation === filterType
             })
             setFilteredProfiles(filteredProfiles)
+            setCurrentPage(1)
         }
-    }, [profiles, filterType, searchQuery])
+    }, [filterType, searchQuery])
 
     useEffect(() => {
         if(filteredProfiles) {

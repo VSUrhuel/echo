@@ -49,6 +49,7 @@ export function useNewsUpdates(limit = 3) {
             title: article.title,
             description: article.excerpt,
             image: imageUrl,
+            slug: article.slug
           }
         })
 

@@ -14,7 +14,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { Partner } from "@/types"
-import { Loader2 } from "lucide-react"
+import { Camera, Loader2, X } from "lucide-react"
+import { useRef } from "react"
 
 interface OjtDialogProps {
   isOpen: boolean
@@ -25,6 +26,8 @@ interface OjtDialogProps {
   isSaving: boolean
   editingLinkage: boolean
   resetForm: () => void
+  handleLogoUpload: (file: File) => Promise<string | null | undefined>
+  isUploading: boolean
 }
 
 export default function OjtDialog({
@@ -35,8 +38,22 @@ export default function OjtDialog({
   onSave,
   isSaving,
   editingLinkage,
-  resetForm
+  resetForm,
+  handleLogoUpload,
+  isUploading
 }: OjtDialogProps) {
+  const fileInputRef = useRef<HTMLInputElement>(null)
+
+  const onFileSelect = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0]
+    if (file) {
+      const url = await handleLogoUpload(file)
+      if(url) {
+        setFormData({ ...formData, logo_url: url })
+      }
+    }
+  }
+
   return (
     <Dialog
       open={isOpen}
@@ -59,6 +76,55 @@ export default function OjtDialog({
           </DialogDescription>
         </DialogHeader>
         <div className="grid gap-4 py-4">
+          <div className="flex flex-col items-center gap-4">
+            <Label>Logo</Label>
+            <div className="relative group">
+              <div className="w-32 h-32 rounded-full border-2 border-dashed border-muted-foreground/30 overflow-hidden bg-muted flex items-center justify-center">
+                {isUploading ? (
+                  <Loader2 className="h-8 w-8 animate-spin text-primary" />
+                ) : formData.logo_url ? (
+                  <img 
+                    src={formData.logo_url} 
+                    alt="Profile Preview" 
+                    className="w-full h-full object-cover"
+                  />
+                ) : (
+                  <Camera className="h-10 w-10 text-muted-foreground/50" />
+                )}
+              </div>
+              
+              {formData.logo_url && !isUploading && (
+                <button
+                  onClick={() => setFormData({ ...formData, logo_url: "" })}
+                  className="absolute -top-1 -right-1 bg-destructive text-destructive-foreground rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity"
+                >
+                  <X className="h-3 w-3" />
+                </button>
+              )}
+              
+              <div className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity rounded-full cursor-pointer">
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="text-white hover:text-white"
+                  onClick={() => fileInputRef.current?.click()}
+                  disabled={isUploading}
+                >
+                  {formData.logo_url ? "Change" : "Upload"}
+                </Button>
+              </div>
+              <input 
+                type="file" 
+                ref={fileInputRef} 
+                className="hidden" 
+                accept="image/*" 
+                onChange={onFileSelect}
+              />
+            </div>
+            <p className="text-xs text-muted-foreground text-center">
+              Clear background and frontal view recommended.
+            </p>
+          </div>
           <div className="grid gap-4 md:grid-cols-2">
             <div className="space-y-2">
               <Label htmlFor="name">Company Name</Label>
@@ -67,7 +133,7 @@ export default function OjtDialog({
                 value={formData.name}
                 onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                 placeholder="Enter company name"
-                disabled={isSaving}
+                disabled={isSaving || isUploading}
               />
             </div>
             <div className="space-y-2">
@@ -75,7 +141,7 @@ export default function OjtDialog({
               <Select 
                 value={formData.type || ""} 
                 onValueChange={(value) => setFormData({ ...formData, type: value })}
-                disabled={isSaving}
+                disabled={isSaving || isUploading}
               >
                 <SelectTrigger>
                   <SelectValue placeholder="Select type" />
@@ -98,7 +164,7 @@ export default function OjtDialog({
                 value={formData.location || ""}
                 onChange={(e) => setFormData({ ...formData, location: e.target.value })}
                 placeholder="City, Province"
-                disabled={isSaving}
+                disabled={isSaving || isUploading}
               />
             </div>
             <div className="space-y-2">
@@ -108,7 +174,7 @@ export default function OjtDialog({
                 value={formData.website_url || ""}
                 onChange={(e) => setFormData({ ...formData, website_url: e.target.value })}
                 placeholder="https://example.com"
-                disabled={isSaving}
+                disabled={isSaving || isUploading}
               />
             </div>
           </div>
@@ -121,7 +187,7 @@ export default function OjtDialog({
                 value={formData.contact_email || ""}
                 onChange={(e) => setFormData({ ...formData, contact_email: e.target.value })}
                 placeholder="email@company.com"
-                disabled={isSaving}
+                disabled={isSaving || isUploading}
               />
             </div>
             <div className="space-y-2">
@@ -132,7 +198,7 @@ export default function OjtDialog({
                 min="0"
                 value={formData.available_slot || 0}
                 onChange={(e) => setFormData({ ...formData, available_slot: Number.parseInt(e.target.value) || 0 })}
-                disabled={isSaving}
+                disabled={isSaving || isUploading}
               />
             </div>
           </div>
@@ -142,7 +208,7 @@ export default function OjtDialog({
               <Select
                 value={formData.is_active ? "Active" : "Inactive"}
                 onValueChange={(value: "Active" | "Inactive") => setFormData({ ...formData, is_active: value === "Active" })}
-                disabled={isSaving}
+                disabled={isSaving || isUploading}
               >
                 <SelectTrigger>
                   <SelectValue />
@@ -162,16 +228,16 @@ export default function OjtDialog({
               onChange={(e) => setFormData({ ...formData, description: e.target.value })}
               placeholder="Brief description of the company and internship opportunities..."
               className="min-h-[100px]"
-              disabled={isSaving}
+              disabled={isSaving || isUploading}
             />
           </div>
         </div>
         <DialogFooter>
-          <Button variant="outline" onClick={() => onOpenChange(false)} disabled={isSaving}>
+          <Button variant="outline" onClick={() => onOpenChange(false)} disabled={isSaving || isUploading}>
             Cancel
           </Button>
-          <Button onClick={onSave} className="bg-primary text-primary-foreground min-w-[120px]" disabled={isSaving}>
-            {isSaving ? (
+          <Button onClick={onSave} className="bg-primary text-primary-foreground min-w-[120px]" disabled={isSaving || isUploading}>
+            {isSaving || isUploading ? (
               <>
                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                 Saving...
