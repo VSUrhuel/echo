@@ -3,6 +3,7 @@ import { createClient } from '@/utils/supabase/client';
 import { useEffect, useState } from 'react';
 import { ArticleFormData } from '@/types';
 import { toast } from 'sonner';
+import { imageSizeCheck } from '@/utils/imageSizeCheck';
 
 export const useWriteArticleAction = (articleFormData?: ArticleFormData, propsArticleId?: number) => {
   const supabase = createClient();
@@ -157,6 +158,7 @@ export const useWriteArticleAction = (articleFormData?: ArticleFormData, propsAr
     setIsUploading(true);
 
     try {
+        if(!imageSizeCheck(file)) return
         const fileExt = file.name.split('.').pop();
         const fileName = `${Date.now()}-${Math.random().toString(36).substring(2)}.${fileExt}`;
 
