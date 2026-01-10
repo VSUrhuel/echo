@@ -8,9 +8,9 @@ import { useRouter } from "next/navigation";
 import Image from "next/image";
 import formatDate from "../utils/format-date";
 
-export default function ArticleViewData({ articleId }: { articleId: string }) {
+export default function ArticleViewData({ articleId, slug }: { articleId?: string, slug?: string }) {
   const router = useRouter();
-  const { articles, article } = useArticleData({ articleId });
+  const { articles, article } = useArticleData({ articleId, slug });
   console.log(article)
   if (!article) {
     return (
@@ -30,7 +30,7 @@ export default function ArticleViewData({ articleId }: { articleId: string }) {
         <div className="container mx-auto px-4 py-3">
           <div className="flex items-center justify-start">
             <button
-              onClick={() => router.push('/admin-articles')}
+              onClick={() => router.back()}
               className="flex items-center gap-2 text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors group"
             >
               <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
@@ -152,10 +152,10 @@ export default function ArticleViewData({ articleId }: { articleId: string }) {
                 <div className="bg-white dark:bg-gray-800 rounded-xl p-6 border border-gray-200 dark:border-gray-700 shadow-sm">
                   <h3 className="font-semibold text-gray-900 dark:text-white mb-4">Recent Articles</h3>
                   <div className="space-y-4">
-                    {articles.slice(0, 5).map((item, index) => (
+                    {articles.filter((article) => article.published_at !== null).slice(0, 5).map((item, index) => (
                       <div 
                         key={index}
-                        onClick={() => router.push(`/admin-articles/view/${item.id}`)} 
+                        onClick={() => router.push(`/articles/${item.slug}`)} 
                         className="group cursor-pointer pb-4 border-b border-gray-100 dark:border-gray-700 last:border-b-0 last:pb-0"
                       >
                         <h4 className="text-sm font-medium text-gray-900 dark:text-white group-hover:text-primary-600 dark:group-hover:text-primary-400 transition-colors line-clamp-2">
@@ -174,7 +174,7 @@ export default function ArticleViewData({ articleId }: { articleId: string }) {
                     ))}
                   </div>
                   
-                  <button onClick={() => router.push('/admin-articles')} className="w-full mt-6 py-2 text-sm font-medium text-primary-600 dark:text-primary-400 hover:text-primary-700 dark:hover:text-primary-300 hover:bg-primary-50 dark:hover:bg-primary-900/20 rounded-lg transition-colors">
+                  <button onClick={() => router.push(`/articles/${article.slug}`)} className="w-full mt-6 py-2 text-sm font-medium text-primary-600 dark:text-primary-400 hover:text-primary-700 dark:hover:text-primary-300 hover:bg-primary-50 dark:hover:bg-primary-900/20 rounded-lg transition-colors">
                     View All Articles →
                   </button>
                 </div>
