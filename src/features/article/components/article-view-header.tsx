@@ -25,7 +25,7 @@ export default function ArticleViewHeader({
   isDraft
 }: ArticleViewHeaderProps) {
   
-  console.log(status)
+
   return (
     <header className="mb-8 lg:mb-12">
       

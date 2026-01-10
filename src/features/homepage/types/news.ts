@@ -18,6 +18,7 @@ export interface NewsArticle {
 
 export interface NewsItem {
   id: number
+  slug: string
   category: string
   date: string
   title: string
