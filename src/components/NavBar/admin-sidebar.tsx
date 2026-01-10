@@ -1,7 +1,7 @@
 "use client"
 
-import Link from "next/link"
-import { usePathname } from "next/navigation"
+
+import { usePathname, useRouter } from "next/navigation"
 import {
   FileText,
   Home,
@@ -27,7 +27,6 @@ import {
 } from "@/components/ui/sidebar"
 import { Button } from "@/components/ui/button"
 import { createClient } from "@/utils/supabase/client"
-
 const menuItems = [
   {
     title: "Dashboard",
@@ -58,6 +57,12 @@ const menuItems = [
 
 export function AdminSidebar() {
   const pathname = usePathname()
+  const router = useRouter()
+
+  const navigate = (href: string) => {
+    router.push(href)
+    router.refresh()
+  }
 
   const handleSignOut = async () => {
     await createClient().auth.signOut()
@@ -67,7 +72,10 @@ export function AdminSidebar() {
   return (
     <Sidebar className="border-r border-sidebar-border">
       <SidebarHeader className="border-b border-sidebar-border p-4">
-        <Link href="/" className="flex items-center gap-3">
+        <div 
+          onClick={() => navigate("/")} 
+          className="flex items-center gap-3 cursor-pointer hover:opacity-80 transition-opacity"
+        >
           <div className="flex h-9 w-9 items-center justify-center rounded-full bg-sidebar-primary">
             <span className="font-serif text-sm font-bold text-sidebar-primary-foreground">DC</span>
           </div>
@@ -75,7 +83,7 @@ export function AdminSidebar() {
             <p className="text-sm font-semibold text-sidebar-foreground">VSU DevCom</p>
             <p className="text-xs text-sidebar-foreground/70">Faculty Portal</p>
           </div>
-        </Link>
+        </div>
       </SidebarHeader>
 
       <SidebarContent>
@@ -86,10 +94,13 @@ export function AdminSidebar() {
               {menuItems.map((item) => (
                 <SidebarMenuItem key={item.href}>
                   <SidebarMenuButton asChild isActive={pathname === item.href}>
-                    <Link href={item.href}>
+                    <div 
+                      onClick={() => navigate(item.href)} 
+                      className="flex items-center gap-2 cursor-pointer w-full"
+                    >
                       <item.icon className="h-4 w-4" />
-                      <span>{item.title}</span>
-                    </Link>
+                      <span className="font-small text-xs">{item.title}</span>
+                    </div>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
               ))}
@@ -103,10 +114,13 @@ export function AdminSidebar() {
             <SidebarMenu>
               <SidebarMenuItem>
                 <SidebarMenuButton asChild>
-                  <Link href="/">
+                  <div 
+                    onClick={() => navigate("/")} 
+                    className="flex items-center gap-2 cursor-pointer w-full"
+                  >
                     <Home className="h-4 w-4" />
                     <span>View Website</span>
-                  </Link>
+                  </div>
                 </SidebarMenuButton>
               </SidebarMenuItem>
             </SidebarMenu>

@@ -7,15 +7,17 @@ import { DataTablePagination } from "@/components/ui/data-table-pagination";
 export default function ArticlePage() {
     const { articles, loading, page, totalPages, prevPage, nextPage, paginatedArticles, setPage } = useArticleData();
     return (
-        <div>
+        <div >
             <ArticelePageHeader />
             <ArticleTable articles={paginatedArticles} loading={loading} />
-            <DataTablePagination 
+            <div className="mx-6 mb-6">
+            <DataTablePagination
                 currentPage={page}
                 totalPages={totalPages}
                 onPageChange={(page) => setPage(page)}
                 isLoading={loading}
             />
+            </div>
         </div>
     );
 }
