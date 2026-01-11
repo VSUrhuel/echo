@@ -48,6 +48,9 @@ export async function updateSession(request: NextRequest) {
     !request.nextUrl.pathname.startsWith('/academics') &&
     !request.nextUrl.pathname.startsWith('/articles') &&
     !request.nextUrl.pathname.startsWith('/public-faculty') &&
+    !request.nextUrl.pathname.startsWith('/news&updates') &&
+    !request.nextUrl.pathname.startsWith('/resources') &&
+    !request.nextUrl.pathname.startsWith('/contact') &&
     request.nextUrl.pathname !== '/'
   ) {
     const url = request.nextUrl.clone()

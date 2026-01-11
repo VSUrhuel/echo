@@ -17,9 +17,9 @@ const menuItems = [
   { name: 'Home', href: '/' },
   { name: 'Academics', href: '/academics' },
   { name: 'Faculty', href: '/public-faculty' },
-  { name: 'News & Updates', href: '#link' },
-  { name: 'Resources', href: '#link' },
-  { name: 'Contact Us', href: '#link' },
+  { name: 'News & Updates', href: '/news&updates' },
+  { name: 'Resources', href: '/resources' },
+  { name: 'Contact Us', href: '/contact' },
 ]
 
 export const SiteHeader = () => {
